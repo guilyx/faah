@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-04-09
+
 ### Fixed
 
 - **mpv** / **`play-faah.sh`**: pass **`--force-window=no`** and **`--no-video`** so **`faah play`** and shell hooks do not open a video window when playing MP3 on some desktops.

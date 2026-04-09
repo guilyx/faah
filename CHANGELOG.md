@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.0.0rc1] - 2026-04-09
+
+Pre-release **2.0.0** (PEP 440: `2.0.0rc1`). Python/Typer CLI, managed `~/.config/faah`, packaging, and installer hardening.
+
 ### Fixed
 
 - Packaging integration tests: set **`XDG_CONFIG_HOME`** alongside **`HOME`** so installs sync under the temp directory when CI defines `XDG_CONFIG_HOME`.

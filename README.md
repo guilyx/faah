@@ -44,7 +44,7 @@ pip install -U faah
 uv tool upgrade faah
 ```
 
-Pre-releases (e.g. **2.0.0** RCs): use **`pip install -U --pre faah`** or pin **`faah==2.0.0rc1`**.
+If you previously installed **`2.0.0rc1`**, upgrade with **`pip install -U faah`** (or **`uv tool upgrade faah`**) to get **`2.0.0`**.
 
 ## Development (from this repo)
 

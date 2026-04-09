@@ -20,7 +20,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 def isolated_user_env(home: Path) -> dict[str, str]:
     """HOME and XDG_CONFIG_HOME so `~/.config/faah` resolves under `home`.
 
-    CI often sets ``XDG_CONFIG_HOME``; if we only set ``HOME``, :func:`faah.installer.managed.default_config_dir`
+    CI often sets ``XDG_CONFIG_HOME``. If we only set ``HOME``, managed config
     still follows XDG and syncs outside the temp directory.
     """
     return {

@@ -14,3 +14,5 @@ Merge [settings.json.fragment](settings.json.fragment) into **File → Preferenc
 ## Recommended extensions
 
 Copy [extensions.json](extensions.json) to a project’s `.vscode/extensions.json` to get workspace recommendations, or install the listed extensions manually. None are required for faah audio.
+
+Project roadmap: [ROADMAP.md](../../../../ROADMAP.md).

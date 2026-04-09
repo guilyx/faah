@@ -20,6 +20,10 @@ faah install
 
 Use **`faah help`** for usage (preferred over **`faah --help`**; both work).
 
+## Roadmap
+
+Released changes are listed in **[CHANGELOG.md](CHANGELOG.md)**. Planned direction for **2.1+** and later (plugin-style hooks for visuals and audio, optional config file, shell parity, CI/portability) is in **[ROADMAP.md](ROADMAP.md)**.
+
 This syncs bundled shell assets into **`~/.config/faah/`** (or **`$XDG_CONFIG_HOME/faah`** when `XDG_CONFIG_HOME` is set) and adds a **single marked block** to `~/.zshrc` and/or `~/.bashrc` that sources the managed `init/faah.{zsh,bash}` files.
 
 Non-interactive (e.g. CI):
@@ -50,7 +54,7 @@ pip install -U faah
 uv tool upgrade faah
 ```
 
-If you previously installed **`2.0.0rc1`**, upgrade with **`pip install -U faah`** (or **`uv tool upgrade faah`**) to get the current **2.0.x** line (**`2.0.1`** includes the mpv no-window fix for **`faah play`** / **`play-faah.sh`**).
+If you previously installed **`2.0.0rc1`**, upgrade with **`pip install -U faah`** (or **`uv tool upgrade faah`**) to get the current **2.0.x** line (**`2.0.1`** includes the mpv no-window fix for **`faah play`** / **`play-faah.sh`**). **2.1.0** (terminal-matrix overhaul, hook fixes, and related changes) is documented in [CHANGELOG.md](CHANGELOG.md); development builds may use **`2.1.0dev0`** on branch **`release/2.1.0-prep`** until the final tag.
 
 ## Development (from this repo)
 
@@ -92,6 +96,7 @@ tests/                     # pytest
 | [src/faah/](src/faah/) | Python package; **`src/faah/data/`** is the bundled shell + sound + editor snippets |
 | [src/faah/data/cursor/README.md](src/faah/data/cursor/README.md) | Cursor terminal notes |
 | [src/faah/data/vscode/README.md](src/faah/data/vscode/README.md) | VS Code terminal notes |
+| [ROADMAP.md](ROADMAP.md) | Planned features and design direction (2.1+) |
 
 ## Environment variables
 

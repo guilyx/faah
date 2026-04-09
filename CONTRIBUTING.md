@@ -23,7 +23,7 @@ By contributing, you agree your contributions are licensed under the same terms 
 
    If your environment loads extra global `pytest` plugins (e.g. ROS), set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` (same as CI).
 
-5. **Update [CHANGELOG.md](CHANGELOG.md)** under `[Unreleased]` with a short note under Added/Changed/Fixed as appropriate.
+5. **Update [CHANGELOG.md](CHANGELOG.md)** under `[Unreleased]` with a short note under Added/Changed/Fixed as appropriate. For larger or cross-cutting ideas (plugins, new shells, config file design), skim [ROADMAP.md](ROADMAP.md) and consider opening an issue before a huge PR.
 
 ## Style
 

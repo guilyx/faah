@@ -12,6 +12,12 @@ This project uses **SemVer**, **Keep a Changelog** (`CHANGELOG.md`), and a **Pyt
 2. Bump **`__version__`** in `src/faah/__init__.py`.
 3. Commit on `main`, a feature/fix branch, or a dedicated **release branch** (e.g. **`release/2.0.0`** or **`release/2.0.0rc1`** for an RC), then open a PR into `main` as needed. Example message: `chore(release): 2.0.0`.
 
+### Prep branches (e.g. **2.1.0**)
+
+- Use a branch like **`release/2.1.0-prep`** to land changelog + version bumps before tagging.
+- While preparing, **`__version__`** may stay on a **PEP 440** pre-release string (e.g. **`2.1.0dev0`**) until you are ready to publish; bump to **`2.1.0`** for the final commit that matches the Git tag and PyPI artifact.
+- [ROADMAP.md](ROADMAP.md) holds forward-looking items that are **not** necessarily part of the tagged release; keep [CHANGELOG.md](CHANGELOG.md) aligned with what actually ships.
+
 ### Pre-releases (rc, alpha, beta)
 
 Use **PEP 440** versions in **`__version__`** (e.g. **`2.0.0rc1`**, not `2.0.0-rc1` in the Python string—tools normalize for PyPI). Tag as **`v2.0.0rc1`** to match. Consumers install with **`pip install --pre faah`** or pin the exact version. Prefer pushing release prep on **`release/<version>`** so the GitHub Release / PyPI publish workflow targets a clear branch.

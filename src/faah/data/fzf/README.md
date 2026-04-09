@@ -26,3 +26,5 @@ Override defaults by exporting `FZF_DEFAULT_OPTS` **before** sourcing these file
 ## Relation to faah
 
 Non-zero exit codes from fzf (e.g. cancel with no selection) return to the shell; your zsh `precmd` / bash `PROMPT_COMMAND` (from `zsh/faah.zsh`, `bash/faah.bash`) can play the sound. Use `FAHH_IGNORE_EXIT` if you want to suppress sound for specific exit codes.
+
+Project roadmap: [ROADMAP.md](../../../../ROADMAP.md).

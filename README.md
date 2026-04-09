@@ -15,6 +15,8 @@ Small dotfiles-style snippets that play a short sound when the last command hits
 | [vscode/](vscode/) | VS Code terminal / settings notes + optional `extensions.json` |
 | [.setup/](.setup/) | Install and dependency checks ([.setup/README.md](.setup/README.md)) |
 | [.setup/update.sh](.setup/update.sh) | Update this repo via `git pull` + rerun dependency report |
+| [VERSION](VERSION) | Project version (SemVer) |
+| [RELEASING.md](RELEASING.md) | How to cut a release + tag |
 | [LICENSE](LICENSE) | MIT (scripts and documentation) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 

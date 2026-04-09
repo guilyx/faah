@@ -47,6 +47,7 @@ usage() {
 
   printf '%bOptions:%b\n' "$B" "$Z"
   printf '  %b-h, --help%b              %bShow this help and exit%b\n' "$C" "$Z" "$D" "$Z"
+  printf '  %b    --version%b           %bPrint version and exit%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b-i, --interactive%b       %bInteractive setup (shell rc, fzf, editor copies, symlink)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --uninstall%b         %bRemove installed blocks/artifacts (see below)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --yes%b               %bAssume yes for uninstall confirmation prompts%b\n' "$C" "$Z" "$D" "$Z"
@@ -79,6 +80,15 @@ usage() {
 
 have_cmd() {
   command -v "$1" >/dev/null 2>&1
+}
+
+print_version() {
+  local vfile="${ROOT}/VERSION"
+  if [[ -f "$vfile" ]]; then
+    printf '%s\n' "$(head -n1 "$vfile")"
+    return 0
+  fi
+  printf '0.0.0\n'
 }
 
 # Missing-deps detection.
@@ -487,6 +497,7 @@ main() {
   local deps_only=0
   local do_install_deps=0
   local do_uninstall=0
+  local do_version=0
 
   _faah_init_style
 
@@ -495,6 +506,10 @@ main() {
       -h | --help)
         usage
         exit 0
+        ;;
+      --version)
+        do_version=1
+        shift
         ;;
       --interactive | -i)
         do_interactive=1
@@ -542,6 +557,11 @@ main() {
         ;;
     esac
   done
+
+  if [[ "$do_version" -eq 1 ]]; then
+    print_version
+    exit 0
+  fi
 
   if [[ "$deps_only" -eq 1 && "$do_interactive" -eq 0 ]]; then
     check_deps

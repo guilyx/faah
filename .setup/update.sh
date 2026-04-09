@@ -25,8 +25,16 @@ fi
 branch=$(git rev-parse --abbrev-ref HEAD)
 printf 'faah update: updating %s (%s)\n' "$ROOT" "$branch"
 
+if [[ -f "${ROOT}/VERSION" ]]; then
+  printf 'faah update: current version %s\n' "$(head -n1 "${ROOT}/VERSION")"
+fi
+
 git fetch --prune origin
 git pull --ff-only
+
+if [[ -f "${ROOT}/VERSION" ]]; then
+  printf 'faah update: updated version %s\n' "$(head -n1 "${ROOT}/VERSION")"
+fi
 
 printf '\nfaah update: running dependency report\n'
 "${ROOT}/.setup/install.sh" --check-deps

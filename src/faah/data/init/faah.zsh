@@ -1,7 +1,7 @@
 # faah bootstrap (zsh)
 #
-# Intended usage in ~/.zshrc (single command):
-#   faah(){ source ~/.config/faah/init/faah.zsh; }; faah
+# Intended usage in ~/.zshrc (inside # >> faah:zsh … # << faah:zsh), single line:
+#   [[ -r ~/.config/faah/init/faah.zsh ]] && source ~/.config/faah/init/faah.zsh
 
 [[ -o interactive ]] || return 0
 

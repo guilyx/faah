@@ -18,7 +18,7 @@ faah
 faah install
 ```
 
-This syncs bundled shell assets into **`~/.config/faah/`** and adds a **single marked block** to `~/.zshrc` and/or `~/.bashrc` that sources the managed `init/faah.{zsh,bash}` files.
+This syncs bundled shell assets into **`~/.config/faah/`** (or **`$XDG_CONFIG_HOME/faah`** when `XDG_CONFIG_HOME` is set) and adds a **single marked block** to `~/.zshrc` and/or `~/.bashrc` that sources the managed `init/faah.{zsh,bash}` files.
 
 Non-interactive (e.g. CI):
 
@@ -87,6 +87,7 @@ tests/                     # pytest
 
 | Variable | Meaning |
 |----------|---------|
+| `XDG_CONFIG_HOME` | If set, managed config is **`$XDG_CONFIG_HOME/faah`** (must not point at a parent of your clone such that this path equals the repository root). If **unset**, faah uses **`~/.config/faah`** (i.e. `$HOME/.config/faah`). |
 | `FAHH_ROOT` | Managed config root (default: `~/.config/faah` when using installed snippets) |
 | `FAHH_SOUND` | Path to sound file (default: `$FAHH_ROOT/assets/sounds/fahhh.mp3`) |
 | `FAHH_DISABLED` | If non-empty, hooks do nothing |
@@ -96,7 +97,11 @@ tests/                     # pytest
 
 ## Troubleshooting
 
-- **No sound**: Install **mpv** or **ffplay**; run `faah doctor`.
+- **No sound**: Install **mpv** or **ffplay**; run `faah doctor**.
+- **`faah install` runs the hook instead of the CLI** (e.g. you see **`faah:source:`** and the Python CLI never runs): Older rc snippets defined a **shell function** named **`faah`** that **shadowed** the real `faah` on your `PATH`. **Workaround:** run **`command faah install --yes`** once (zsh/bash: bypasses the function; same idea as **`\faah`** in zsh). After that, **`faah install`** updates the marked block to a one-liner that does **not** define `faah`, so the CLI works normally.
+- **`source: no such file ... ~/.config/faah/init/faah.zsh`**: Your rc still runs the faah bootstrap, but **`~/.config/faah`** is missing or incomplete (removed by hand, failed install, etc.). **Fix:** run **`faah install --yes`** (or **`command faah install --yes`** if the function still shadows—see above), or remove the faah block from `~/.zshrc` / `~/.bashrc` (see **`faah uninstall`**). To edit rc without loading it: `zsh -f` then `nano ~/.zshrc`. The managed line is **`[[ -r ... ]] && source ...`** so a **missing top-level init file** does not error on startup.
+- **Other errors from faah on startup**: The rc line only skips loading when that **main** `init/faah.{zsh,bash}` is absent or not readable. It does **not** silence failures from **`source`** itself (e.g. syntax error in that file) or from **nested** `source` lines inside managed files (e.g. a partial/corrupt tree). Those messages are intentional so you notice a broken install—run **`faah install --yes`** or **`faah doctor`**, or remove the faah block.
+- **`assets/`, `bash/`, `zsh/`, … appeared at the root of your git clone** (with **`XDG_CONFIG_HOME` unset**): The intended location is **`~/.config/faah`**, not the repo. This usually means **`~/.config/faah` was a symlink** to your clone (or **`XDG_CONFIG_HOME`** used to be wrong so **`$XDG_CONFIG_HOME/faah`** was the clone). **Fix:** remove the symlink and use a real directory (`mkdir -p ~/.config/faah` after removing the link), delete stray copies from the clone (`git status`, then remove untracked `assets/`, `bash/`, … only if they are not part of `src/faah/data/`), run **`faah doctor`** — it reports **unsafe** if the resolved path still looks like a source checkout. Newer faah versions **refuse to sync** into a path that looks like the development repository.
 - **Editors**: Integrated terminals must load your interactive shell rc. See [src/faah/data/cursor/README.md](src/faah/data/cursor/README.md) and [src/faah/data/vscode/README.md](src/faah/data/vscode/README.md).
 
 ## Contributing

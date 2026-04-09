@@ -15,7 +15,12 @@ from rich.table import Table
 from faah import __version__
 from faah.doctor import apt_fix_commands, check_audio, check_fzf, have_cmd, run_apt_fix
 from faah.installer.editor import install_editor_helpers, remove_editor_artifacts
-from faah.installer.managed import default_config_dir, sound_path, sync_managed_config
+from faah.installer.managed import (
+    default_config_dir,
+    sound_path,
+    sync_managed_config,
+    unsafe_managed_dest_reason,
+)
 from faah.installer.rc import ensure_block, remove_block_file
 from faah.sound import play_sound
 
@@ -29,12 +34,16 @@ console = Console(stderr=True)
 
 
 def _bootstrap_line(shell: str, managed: Path) -> str:
+    # Single line, no shell function named `faah` — that shadowed the real `faah` CLI on PATH.
+    # Guard with [[ -r ]] so a missing ~/.config/faah does not break every new shell.
     if shell == "zsh":
         p = managed / "init" / "faah.zsh"
-        return f"faah(){{ source {shlex.quote(str(p))}; }}; faah\n"
+        q = shlex.quote(str(p))
+        return f"[[ -r {q} ]] && source {q}\n"
     if shell == "bash":
         p = managed / "init" / "faah.bash"
-        return f"faah(){{ source {shlex.quote(str(p))}; }}; faah\n"
+        q = shlex.quote(str(p))
+        return f"[[ -r {q} ]] && source {q}\n"
     raise ValueError(shell)
 
 
@@ -93,7 +102,11 @@ def install_command(
         console.print(msg)
         raise typer.Exit(1)
 
-    managed = sync_managed_config()
+    try:
+        managed = sync_managed_config()
+    except ValueError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1) from None
     console.print(f"[green]Synced[/green] bundled files to [bold]{managed}[/bold]")
 
     def pick(name: str, current: bool | None, default: bool) -> bool:
@@ -191,6 +204,10 @@ def doctor_command(
     table.add_column("Check", style="cyan")
     table.add_column("Status")
 
+    md = default_config_dir()
+    bad = unsafe_managed_dest_reason(md)
+    table.add_row("managed config", f"[red]unsafe[/red] {md}" if bad else f"ok {md}")
+
     for name, (ok, loc) in check_audio().items():
         table.add_row(name, f"{'ok' if ok else 'missing'} {loc or ''}".strip())
 
@@ -201,6 +218,8 @@ def doctor_command(
     table.add_row("sound file", "ok " + str(sp) if sp.is_file() else f"missing {sp}")
 
     console.print(table)
+    if bad:
+        console.print(f"\n[yellow]{bad}[/yellow]")
 
     if fix:
         if not shutil.which("apt-get"):
@@ -221,7 +240,11 @@ def play_command() -> None:
     managed = default_config_dir()
     sp = sound_path(managed)
     if not sp.is_file():
-        sync_managed_config()
+        try:
+            sync_managed_config()
+        except ValueError as e:
+            console.print(f"[red]{e}[/red]")
+            raise typer.Exit(1) from None
         sp = sound_path()
     code = play_sound(sp, background=False)
     raise typer.Exit(code)

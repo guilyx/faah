@@ -1,7 +1,7 @@
 # faah bootstrap (bash)
 #
-# Intended usage in ~/.bashrc (single command):
-#   faah(){ source ~/.config/faah/init/faah.bash; }; faah
+# Intended usage in ~/.bashrc (inside # >> faah:bash … # << faah:bash), single line:
+#   [[ -r ~/.config/faah/init/faah.bash ]] && source ~/.config/faah/init/faah.bash
 
 [[ $- == *i* ]] || return 0
 

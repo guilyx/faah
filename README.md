@@ -58,6 +58,7 @@ Small dotfiles-style snippets that play a short sound when the last command hits
 | `FAHH_ROOT` | Root of this repo (auto-detected if unset) |
 | `FAHH_SOUND` | Path to sound file (default: `$FAHH_ROOT/assets/sounds/fahhh.mp3`) |
 | `FAHH_DISABLED` | If non-empty, hooks do nothing |
+| `FAHH_PLAY_ON_NONZERO` | If set and `FAHH_PLAY_EXIT_CODES` is unset: play on any non-zero exit (includes “normal failing commands”) |
 | `FAHH_PLAY_EXIT_CODES` | Space-separated exit codes that **do** trigger sound (default: `127 126`). Set to `all` to play on any non-zero exit (old behavior). |
 | `FAHH_IGNORE_EXIT` | When `FAHH_PLAY_EXIT_CODES=all`: codes that **never** trigger sound (default: `130` Ctrl-C). Ignored in default 127/126 mode. |
 | `FAHH_INSTALL_DEST` | Base dir for interactive installer copies of Cursor/VS Code fragments (default: `~/.config/faah/install`) |

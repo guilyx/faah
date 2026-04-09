@@ -1,5 +1,6 @@
 # faah: optional sound on selected exit codes (interactive bash).
-# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_SOUND, FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all")
+# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_SOUND, FAHH_PLAY_ON_NONZERO,
+#      FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all")
 
 [[ $- == *i* ]] || return 0
 
@@ -17,7 +18,14 @@ faah_prompt() {
   [[ -n ${FAHH_DISABLED:-} ]] && return 0
   [[ -z $_FAAH_PLAY ]] && return 0
 
-  local pec=${FAHH_PLAY_EXIT_CODES:-127 126}
+  local pec
+  if [[ -n ${FAHH_PLAY_EXIT_CODES:-} ]]; then
+    pec=${FAHH_PLAY_EXIT_CODES}
+  elif [[ -n ${FAHH_PLAY_ON_NONZERO:-} ]]; then
+    pec=all
+  else
+    pec='127 126'
+  fi
   if [[ "$pec" == all ]]; then
     local _faah_ignore=${FAHH_IGNORE_EXIT:-130}
     local _tok

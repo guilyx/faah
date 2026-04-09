@@ -1,5 +1,6 @@
 # faah: optional sound on selected exit codes (interactive zsh).
-# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_SOUND, FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all")
+# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_SOUND, FAHH_PLAY_ON_NONZERO,
+#      FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all")
 
 [[ -o interactive ]] || return 0
 
@@ -19,7 +20,14 @@ faah_precmd() {
 
   # Default: only "command not found" (127) and "not executable" (126), like POSIX shells.
   # Set FAHH_PLAY_EXIT_CODES=all to play on any non-zero exit (except FAHH_IGNORE_EXIT, default 130).
-  local pec=${FAHH_PLAY_EXIT_CODES:-127 126}
+  local pec
+  if [[ -n ${FAHH_PLAY_EXIT_CODES:-} ]]; then
+    pec=${FAHH_PLAY_EXIT_CODES}
+  elif [[ -n ${FAHH_PLAY_ON_NONZERO:-} ]]; then
+    pec=all
+  else
+    pec='127 126'
+  fi
   if [[ "$pec" == all ]]; then
     local code
     for code in ${=FAHH_IGNORE_EXIT:-130}; do

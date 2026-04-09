@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `.setup/update.sh` to update the repo (`git pull --ff-only`) and rerun the dependency report.
 - Repository layout: `assets/sounds/`, `scripts/play-faah.sh`, `zsh/faah.zsh`, `bash/faah.bash`, `fzf/` (defaults + official `fzf --zsh` / `fzf --bash` integration), `cursor/` and `vscode/` docs and optional settings fragments.
 - Interactive shell hooks: play `fahhh.mp3` on selected exit codes (default **127/126**) via zsh `precmd` and bash `PROMPT_COMMAND`, with `FAHH_DISABLED`, `FAHH_PLAY_EXIT_CODES`, `FAHH_SOUND` / `FAHH_ROOT`.
+- `FAHH_PLAY_ON_NONZERO` opt-in to play sound on any non-zero exit without changing `FAHH_PLAY_EXIT_CODES`.
 - `vscode/extensions.json` with optional editor recommendations (shell/formatting); not required for faah.
 - `.setup/install.sh` for `chmod`, **dependency report**, optional `~/.config/faah` symlink (`FAHH_CONFIG_LINK`), snippet printing, and **`--interactive`** wizard (zsh/bash/fzf, Cursor/VS Code helper copies under `FAHH_INSTALL_DEST`, idempotent marked blocks in rc files); `.setup/README.md`.
 - `.gitignore`, `CONTRIBUTING.md`, and `LICENSE` (MIT with `SPDX-License-Identifier: MIT`); README layout rows and License section; contributing guide links licensing to MIT.

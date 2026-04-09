@@ -13,6 +13,14 @@ Thumbs.db
 *.tmp
 *.log
 
+# Python / uv
+.venv/
+dist/
+*.egg-info/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+
 # Optional local overrides (uncomment if you add machine-specific files)
 # local/
 # *.local

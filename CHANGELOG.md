@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Python package `faah` on PyPI**: `pyproject.toml`, `src/faah/` CLI (`faah`, `faah install|uninstall|doctor|play`), bundled shell assets under `src/faah/data/`, managed install into `~/.config/faah/`.
+- **uv** workflow: `uv.lock`, `Makefile` (`test` / `lint` / `build`).
+- **GitHub Actions**: Python CI (`ruff`, `pytest`, `build`) + optional shell checks; **Publish to PyPI** workflow (Trusted Publishing / OIDC).
+
+### Changed
+
+- **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`. `.setup/install.sh` and `.setup/update.sh` are thin deprecated wrappers.
+
 ## [1.0.0] - 2026-04-09
 
 ### Fixed

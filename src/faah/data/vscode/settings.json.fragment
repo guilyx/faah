@@ -1,0 +1,14 @@
+{
+  "//_faah": "Merge into User settings JSON. Paths are examples; adjust to your shell.",
+  "terminal.integrated.defaultProfile.linux": "zsh",
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "zsh",
+      "args": ["-l"]
+    },
+    "bash": {
+      "path": "bash",
+      "args": ["-l"]
+    }
+  }
+}

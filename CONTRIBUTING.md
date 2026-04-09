@@ -19,6 +19,8 @@ By contributing, you agree your contributions are licensed under the same terms 
    uv run ruff check src tests
    ```
 
+   **Packaging integration tests** (`tests/test_packaging_integration.py`) build a wheel, install it into a throwaway venv, and run the real `faah` entrypoint with a temporary `HOME` (takes on the order of tens of seconds).
+
    If your environment loads extra global `pytest` plugins (e.g. ROS), set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` (same as CI).
 
 5. **Update [CHANGELOG.md](CHANGELOG.md)** under `[Unreleased]` with a short note under Added/Changed/Fixed as appropriate.

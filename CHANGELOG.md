@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Integration tests that **build a wheel**, **install into an isolated venv**, and run **`faah --version`**, **`doctor`**, **`install --yes`**, and **`play`** with a temporary `HOME`.
 - **Python package `faah` on PyPI**: `pyproject.toml`, `src/faah/` CLI (`faah`, `faah install|uninstall|doctor|play`), bundled shell assets under `src/faah/data/`, managed install into `~/.config/faah/`.
 - **uv** workflow: `uv.lock`; run tests with `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest`, lint with `uv run ruff check`, build with `uv run python -m build`.
 - **GitHub Actions**: Python CI (`ruff`, `pytest`, `build`) + optional shell checks; **Publish to PyPI** workflow (Trusted Publishing / OIDC).

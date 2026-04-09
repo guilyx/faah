@@ -10,8 +10,10 @@ if [[ -z ${FAHH_ROOT:-} ]]; then
 fi
 export FAHH_ROOT
 
+# shellcheck source=../bash/faah.bash
 source "${FAHH_ROOT}/bash/faah.bash"
 
 # Optional: fzf integration if installed/enabled by the user.
+# shellcheck source=../fzf/fzf.bash
 [[ -n ${FAHH_ENABLE_FZF:-} ]] && source "${FAHH_ROOT}/fzf/fzf.bash"
 

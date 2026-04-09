@@ -1,5 +1,5 @@
-# faah: play sound on non-zero exit (interactive bash). Source from ~/.bashrc after [[ $- == *i* ]].
-# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_IGNORE_EXIT (space-separated codes, default: 130), FAHH_SOUND
+# faah: optional sound on selected exit codes (interactive bash).
+# Env: FAHH_ROOT, FAHH_DISABLED, FAHH_SOUND, FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all")
 
 [[ $- == *i* ]] || return 0
 
@@ -17,12 +17,23 @@ faah_prompt() {
   [[ -n ${FAHH_DISABLED:-} ]] && return 0
   [[ -z $_FAAH_PLAY ]] && return 0
 
-  local _faah_ignore=${FAHH_IGNORE_EXIT:-130}
-  local _tok
-  IFS=' ' read -r -a _faah_codes <<< "$_faah_ignore"
-  for _tok in "${_faah_codes[@]}"; do
-    [[ "$ec" -eq "$_tok" ]] && return 0
-  done
+  local pec=${FAHH_PLAY_EXIT_CODES:-127 126}
+  if [[ "$pec" == all ]]; then
+    local _faah_ignore=${FAHH_IGNORE_EXIT:-130}
+    local _tok
+    IFS=' ' read -r -a _faah_codes <<< "$_faah_ignore"
+    for _tok in "${_faah_codes[@]}"; do
+      [[ "$ec" -eq "$_tok" ]] && return 0
+    done
+    [[ "$ec" -eq 0 ]] && return 0
+  else
+    local _c _match=0
+    IFS=' ' read -r -a _faah_play_codes <<< "$pec"
+    for _c in "${_faah_play_codes[@]}"; do
+      [[ "$ec" -eq "$_c" ]] && _match=1 && break
+    done
+    [[ "$_match" -eq 1 ]] || return 0
+  fi
 
   "$_FAAH_PLAY" &>/dev/null
 }

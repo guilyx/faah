@@ -14,3 +14,5 @@ Merge [settings.json.fragment](settings.json.fragment) into **Cursor → Setting
 ## Extensions
 
 Cursor is VS Code–compatible; optional extension IDs are listed in [vscode/extensions.json](../vscode/extensions.json). Install manually or copy that file into a workspace `.vscode/` folder if you want “recommended extensions” prompts in a project.
+
+Project roadmap: [ROADMAP.md](../../../../ROADMAP.md).

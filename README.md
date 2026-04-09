@@ -57,17 +57,31 @@ uv run python -m build
 
 Console entrypoint: `faah` → `faah.cli:main`.
 
-## Layout
+## Repository layout
+
+Everything user-facing after install lives under **`~/.config/faah/`**, populated from a **single bundled tree** in the Python package:
+
+```text
+src/faah/
+├── __init__.py          # version
+├── cli.py               # Typer CLI
+├── sound.py             # play MP3 via mpv/ffplay/…
+├── installer/           # rc blocks, sync bundled data, editor copies
+└── data/                # only copy of shell assets (sdist/wheel)
+    ├── assets/sounds/fahhh.mp3
+    ├── scripts/play-faah.sh
+    ├── zsh/  bash/  fzf/  init/
+    ├── cursor/          # optional editor fragments (→ install/cursor when selected)
+    └── vscode/
+tests/                     # pytest
+.github/workflows/         # CI + PyPI publish
+```
 
 | Path | Role |
 |------|------|
-| [src/faah/](src/faah/) | Python package (CLI, installer, bundled `data/`) |
-| [assets/sounds/fahhh.mp3](assets/sounds/fahhh.mp3) | Source copy of default sound (also shipped in the wheel under `faah/data/`) |
-| [scripts/play-faah.sh](scripts/play-faah.sh) | Shell player script (bundled into `~/.config/faah/scripts/` by the installer) |
-| [zsh/faah.zsh](zsh/faah.zsh), [bash/faah.bash](bash/faah.bash) | Hook sources (mirrored under `src/faah/data/`) |
-| [fzf/](fzf/) | fzf defaults + integration |
-| [cursor/](cursor/), [vscode/](vscode/) | Editor helper fragments (copied to `~/.config/faah/install/` when selected) |
-| [.setup/](.setup/) | **Deprecated** wrappers; prefer `faah` CLI ([.setup/README.md](.setup/README.md)) |
+| [src/faah/](src/faah/) | Python package; **`src/faah/data/`** is the bundled shell + sound + editor snippets |
+| [src/faah/data/cursor/README.md](src/faah/data/cursor/README.md) | Cursor terminal notes |
+| [src/faah/data/vscode/README.md](src/faah/data/vscode/README.md) | VS Code terminal notes |
 
 ## Environment variables
 
@@ -83,7 +97,7 @@ Console entrypoint: `faah` → `faah.cli:main`.
 ## Troubleshooting
 
 - **No sound**: Install **mpv** or **ffplay**; run `faah doctor`.
-- **Editors**: Integrated terminals must load your interactive shell rc. See [cursor/README.md](cursor/README.md) and [vscode/README.md](vscode/README.md).
+- **Editors**: Integrated terminals must load your interactive shell rc. See [src/faah/data/cursor/README.md](src/faah/data/cursor/README.md) and [src/faah/data/vscode/README.md](src/faah/data/vscode/README.md).
 
 ## Contributing
 

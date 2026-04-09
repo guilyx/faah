@@ -14,7 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`. `.setup/install.sh` and `.setup/update.sh` are thin deprecated wrappers.
+- **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`.
+- **Repository layout**: removed duplicate top-level `assets/`, `bash/`, `zsh/`, `fzf/`, `init/`, `scripts/`, `cursor/`, `vscode/`, legacy `.setup/`, and root `VERSION`. Bundled shell assets live only under **`src/faah/data/`**; version only in **`src/faah/__init__.py`**.
 - **Dev workflow**: no `Makefile`; use the `uv run` commands documented in `README.md` and `CONTRIBUTING.md`.
 
 ## [1.0.0] - 2026-04-09

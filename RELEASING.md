@@ -4,8 +4,7 @@ This project uses **SemVer**, **Keep a Changelog** (`CHANGELOG.md`), and a **Pyt
 
 ## Version source of truth
 
-- **`src/faah/__init__.py`**: `__version__` (used by Hatch and `faah --version`).
-- Optionally keep root **`VERSION`** in sync for humans/scripts; PyPI uses the Python version.
+- **`src/faah/__init__.py`**: `__version__` (used by Hatch, `faah --version`, and PyPI).
 
 ## Prepare a release
 

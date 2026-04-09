@@ -9,8 +9,8 @@ By contributing, you agree your contributions are licensed under the same terms 
 1. **Fork or branch** from `main` (or the default branch).
 2. **Change the smallest surface** needed: one concern per pull request when practical.
 3. **Test interactively** after editing hooks:
-   - zsh: `zsh -ic 'source ./zsh/faah.zsh; false; echo exit=$?'`
-   - bash: `bash -ic 'source ./bash/faah.bash; false; echo exit=$?'`
+   - zsh: `zsh -ic 'source ./src/faah/data/zsh/faah.zsh; false; echo exit=$?'`
+   - bash: `bash -ic 'source ./src/faah/data/bash/faah.bash; false; echo exit=$?'`
 4. **Python**: use **uv** (see `pyproject.toml`). Install dev extras and run checks:
 
    ```bash

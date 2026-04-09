@@ -17,6 +17,7 @@ Thumbs.db
 .venv/
 dist/
 *.egg-info/
+.pytest_cache/
 .ruff_cache/
 __pycache__/
 *.py[cod]

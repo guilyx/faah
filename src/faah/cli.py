@@ -14,6 +14,7 @@ from rich.table import Table
 
 from faah import __version__
 from faah.doctor import apt_fix_commands, check_audio, check_fzf, have_cmd, run_apt_fix
+from faah.error_banner import maybe_print_fah_banner_on_usage_error
 from faah.installer.editor import install_editor_helpers, remove_editor_artifacts
 from faah.installer.managed import (
     default_config_dir,
@@ -51,6 +52,30 @@ def _fzf_export_line() -> str:
     return "export FAHH_ENABLE_FZF=1\n"
 
 
+def _sync_fah_banner_block(rc_path: Path, want_banner: bool) -> None:
+    """Ensure or remove the banner-env block (export FAHH_FAH_BANNER=0 when disabled)."""
+    bid = "banner-env"
+    if want_banner:
+        r = remove_block_file(rc_path, bid, backup=True)
+        if r.changed:
+            console.print(f"[dim]Removed[/dim] {bid} from {rc_path} (banner enabled)")
+    else:
+        body = "export FAHH_FAH_BANNER=0\n"
+        r = ensure_block(rc_path, bid, body, backup=True)
+        if r.changed:
+            console.print(f"[green]Added[/green] FAHH_FAH_BANNER=0 to {rc_path}")
+
+
+@app.command("help", add_help_option=False)
+def help_command(ctx: typer.Context) -> None:
+    """Show usage for faah — prefer this over `faah --help`."""
+    parent = ctx.parent
+    if parent is None:
+        typer.echo(ctx.get_help())
+        raise typer.Exit(0)
+    typer.echo(parent.get_help())
+
+
 @app.callback()
 def main_callback(
     ctx: typer.Context,
@@ -67,6 +92,7 @@ def main_callback(
             fzf=None,
             cursor=None,
             vscode=None,
+            fah_banner=None,
         )
 
 
@@ -95,6 +121,14 @@ def install_command(
         "--vscode/--no-vscode",
         help="Copy VS Code helper fragments to ~/.config/faah/install/vscode/.",
     ),
+    fah_banner: bool | None = typer.Option(
+        None,
+        "--fah-banner/--no-fah-banner",
+        help=(
+            "Show the FAAAAAAAAAAAAH banner on CLI usage mistakes (exit 2). "
+            "When disabled, adds export FAHH_FAH_BANNER=0 to shell rc for installed shells."
+        ),
+    ),
 ) -> None:
     """Sync managed config and add shell rc blocks (interactive by default)."""
     if not sys.stdin.isatty() and not yes:
@@ -121,6 +155,10 @@ def install_command(
     do_fzf = pick("Enable fzf integration (FAHH_ENABLE_FZF)?", fzf, False)
     do_cursor = pick("Copy Cursor helper files under install/cursor?", cursor, False)
     do_vscode = pick("Copy VS Code helper files under install/vscode?", vscode, False)
+    if do_zsh or do_bash:
+        want_fah_banner = pick("Show FAAAAAAAAAAAAH on CLI usage mistakes?", fah_banner, True)
+    else:
+        want_fah_banner = True if fah_banner is None else fah_banner
 
     home = Path.home()
     if do_zsh:
@@ -136,6 +174,7 @@ def install_command(
                 console.print("[green]Added[/green] fzf env to ~/.zshrc")
             else:
                 console.print("[dim]Skip[/dim] fzf-zsh block already present")
+        _sync_fah_banner_block(home / ".zshrc", want_fah_banner)
 
     if do_bash:
         body = _bootstrap_line("bash", managed)
@@ -150,6 +189,7 @@ def install_command(
                 console.print("[green]Added[/green] fzf env to ~/.bashrc")
             else:
                 console.print("[dim]Skip[/dim] fzf-bash block already present")
+        _sync_fah_banner_block(home / ".bashrc", want_fah_banner)
 
     if do_cursor or do_vscode:
         paths = install_editor_helpers(managed, cursor=bool(do_cursor), vscode=bool(do_vscode))
@@ -181,8 +221,10 @@ def uninstall_command(
     managed = default_config_dir()
     for path, bid in (
         (home / ".zshrc", "fzf-zsh"),
+        (home / ".zshrc", "banner-env"),
         (home / ".zshrc", "zsh"),
         (home / ".bashrc", "fzf-bash"),
+        (home / ".bashrc", "banner-env"),
         (home / ".bashrc", "bash"),
     ):
         remove_block_file(path, bid, backup=True)
@@ -241,4 +283,10 @@ def play_command() -> None:
 
 
 def main() -> None:
-    app()
+    try:
+        app()
+    except SystemExit as e:
+        code = e.code
+        if isinstance(code, int):
+            maybe_print_fah_banner_on_usage_error(code)
+        raise

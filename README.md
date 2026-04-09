@@ -18,6 +18,8 @@ faah
 faah install
 ```
 
+Use **`faah help`** for usage (preferred over **`faah --help`**; both work).
+
 This syncs bundled shell assets into **`~/.config/faah/`** (or **`$XDG_CONFIG_HOME/faah`** when `XDG_CONFIG_HOME` is set) and adds a **single marked block** to `~/.zshrc` and/or `~/.bashrc` that sources the managed `init/faah.{zsh,bash}` files.
 
 Non-interactive (e.g. CI):
@@ -26,10 +28,13 @@ Non-interactive (e.g. CI):
 faah install --yes
 ```
 
+During **`faah install`**, you can opt out of the usage-error banner with **`--no-fah-banner`** (adds **`export FAHH_FAH_BANNER=0`** to shell rc for the shells you install).
+
 Other commands:
 
 | Command | Purpose |
 |---------|---------|
+| `faah help` | Show CLI usage (preferred over **`faah --help`**) |
 | `faah doctor` | Check mpv/ffplay/paplay/aplay, fzf, sound file |
 | `faah doctor --fix` | On Debian/Ubuntu with `apt-get`, install missing tools (sudo) |
 | `faah play` | Play the sound once |
@@ -96,6 +101,7 @@ tests/                     # pytest
 | `FAHH_PLAY_ON_NONZERO` | If set and `FAHH_PLAY_EXIT_CODES` is unset: play on any non-zero exit |
 | `FAHH_PLAY_EXIT_CODES` | Space-separated codes that trigger sound (default: `127 126`). Use `all` for any non-zero. |
 | `FAHH_IGNORE_EXIT` | When mode is `all`: codes to never trigger sound (default: `130`) |
+| `FAHH_FAH_BANNER` | If **`0`**, **`false`**, **`no`**, or **`off`**, suppress the ASCII **FAAAAAAAAAAAAH** banner on CLI usage mistakes (Typer exit **2**). Default: enabled. Set via env or **`faah install --no-fah-banner`**. |
 
 ## Troubleshooting
 

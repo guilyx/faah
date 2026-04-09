@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`faah help`** subcommand for usage (documented as preferred over **`faah --help`**).
+- Optional ASCII **FAAAAAAAAAAAAH** banner on CLI usage errors (exit code **2**); disable with **`FAHH_FAH_BANNER=0`** (or **`false`** / **`no`** / **`off`**). **`faah install`** supports **`--fah-banner` / `--no-fah-banner`** and a prompt (when installing zsh/bash) to add **`export FAHH_FAH_BANNER=0`** in a marked **`banner-env`** rc block.
+
 ## [2.0.1] - 2026-04-09
 
 ### Fixed

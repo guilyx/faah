@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **mpv** / **`play-faah.sh`**: pass **`--force-window=no`** and **`--no-video`** so **`faah play`** and shell hooks do not open a video window when playing MP3 on some desktops.
+
 ## [2.0.0] - 2026-04-09
 
 Stable **2.x** release: Python/Typer CLI, managed **`~/.config/faah`**, PyPI packaging, installer hardening, and shared **`faah play`** implementation. Supersedes pre-release **`2.0.0rc1`** (same feature set plus GA polish).

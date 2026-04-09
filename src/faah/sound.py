@@ -47,8 +47,18 @@ def play_sound(sound_file: Path, *, background: bool = True) -> int:
     if not path.is_file():
         return 1
     p = str(path)
+    # mpv: --force-window=no + --no-video avoid a GUI window for MP3 on some desktops.
     for exe, args in (
-        ("mpv", ["--no-terminal", "--really-quiet", p]),
+        (
+            "mpv",
+            [
+                "--no-terminal",
+                "--really-quiet",
+                "--force-window=no",
+                "--no-video",
+                p,
+            ],
+        ),
         ("ffplay", ["-nodisp", "-autoexit", "-loglevel", "quiet", p]),
         ("paplay", [p]),
         ("aplay", ["-q", p]),

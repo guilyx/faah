@@ -13,7 +13,7 @@ fi
 
 _play() {
   if command -v mpv >/dev/null 2>&1; then
-    exec mpv --no-terminal --really-quiet "$_sound"
+    exec mpv --no-terminal --really-quiet --force-window=no --no-video "$_sound"
   fi
   if command -v ffplay >/dev/null 2>&1; then
     exec ffplay -nodisp -autoexit -loglevel quiet "$_sound"

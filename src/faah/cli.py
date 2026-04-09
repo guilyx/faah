@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import shlex
 import shutil
 import sys
@@ -13,8 +14,8 @@ from rich.prompt import Confirm
 from rich.table import Table
 
 from faah import __version__
+from faah.cli_exit import coerce_cli_exit_code, maybe_matrix_on_usage_error
 from faah.doctor import apt_fix_commands, check_audio, check_fzf, have_cmd, run_apt_fix
-from faah.error_banner import maybe_print_fah_banner_on_usage_error
 from faah.installer.editor import install_editor_helpers, remove_editor_artifacts
 from faah.installer.managed import (
     default_config_dir,
@@ -52,18 +53,24 @@ def _fzf_export_line() -> str:
     return "export FAHH_ENABLE_FZF=1\n"
 
 
-def _sync_fah_banner_block(rc_path: Path, want_banner: bool) -> None:
-    """Ensure or remove the banner-env block (export FAHH_FAH_BANNER=0 when disabled)."""
-    bid = "banner-env"
-    if want_banner:
+def _migrate_remove_legacy_rc_blocks(rc_path: Path) -> None:
+    """Drop old banner-env / matrix-env markers from earlier faah versions."""
+    for bid in ("banner-env", "matrix-env"):
+        remove_block_file(rc_path, bid, backup=True)
+
+
+def _sync_matrix_disable_block(rc_path: Path, want_matrix: bool) -> None:
+    """matrix-disable exports FAHH_DISABLE_MATRIX=1 when user opts out of matrix effects."""
+    bid = "matrix-disable"
+    if want_matrix:
         r = remove_block_file(rc_path, bid, backup=True)
         if r.changed:
-            console.print(f"[dim]Removed[/dim] {bid} from {rc_path} (banner enabled)")
+            console.print(f"[dim]Removed[/dim] {bid} from {rc_path} (matrix enabled)")
     else:
-        body = "export FAHH_FAH_BANNER=0\n"
+        body = "export FAHH_DISABLE_MATRIX=1\n"
         r = ensure_block(rc_path, bid, body, backup=True)
         if r.changed:
-            console.print(f"[green]Added[/green] FAHH_FAH_BANNER=0 to {rc_path}")
+            console.print(f"[green]Added[/green] FAHH_DISABLE_MATRIX=1 to {rc_path}")
 
 
 @app.command("help", add_help_option=False)
@@ -92,7 +99,7 @@ def main_callback(
             fzf=None,
             cursor=None,
             vscode=None,
-            fah_banner=None,
+            matrix=None,
         )
 
 
@@ -121,13 +128,11 @@ def install_command(
         "--vscode/--no-vscode",
         help="Copy VS Code helper fragments to ~/.config/faah/install/vscode/.",
     ),
-    fah_banner: bool | None = typer.Option(
+    matrix: bool | None = typer.Option(
         None,
-        "--fah-banner/--no-fah-banner",
-        help=(
-            "Show the FAAAAAAAAAAAAH banner on CLI usage mistakes (exit 2). "
-            "When disabled, adds export FAHH_FAH_BANNER=0 to shell rc for installed shells."
-        ),
+        "--matrix/--no-matrix",
+        help="Terminal-matrix on faah mistakes and shell hooks (default: on). "
+        "When off, adds export FAHH_DISABLE_MATRIX=1 to installed shells.",
     ),
 ) -> None:
     """Sync managed config and add shell rc blocks (interactive by default)."""
@@ -156,9 +161,13 @@ def install_command(
     do_cursor = pick("Copy Cursor helper files under install/cursor?", cursor, False)
     do_vscode = pick("Copy VS Code helper files under install/vscode?", vscode, False)
     if do_zsh or do_bash:
-        want_fah_banner = pick("Show FAAAAAAAAAAAAH on CLI usage mistakes?", fah_banner, True)
+        want_matrix = pick(
+            "Enable terminal-matrix (FAH rain) on shell hooks and faah CLI mistakes?",
+            matrix,
+            True,
+        )
     else:
-        want_fah_banner = True if fah_banner is None else fah_banner
+        want_matrix = True if matrix is None else matrix
 
     home = Path.home()
     if do_zsh:
@@ -174,7 +183,8 @@ def install_command(
                 console.print("[green]Added[/green] fzf env to ~/.zshrc")
             else:
                 console.print("[dim]Skip[/dim] fzf-zsh block already present")
-        _sync_fah_banner_block(home / ".zshrc", want_fah_banner)
+        _migrate_remove_legacy_rc_blocks(home / ".zshrc")
+        _sync_matrix_disable_block(home / ".zshrc", want_matrix)
 
     if do_bash:
         body = _bootstrap_line("bash", managed)
@@ -189,7 +199,8 @@ def install_command(
                 console.print("[green]Added[/green] fzf env to ~/.bashrc")
             else:
                 console.print("[dim]Skip[/dim] fzf-bash block already present")
-        _sync_fah_banner_block(home / ".bashrc", want_fah_banner)
+        _migrate_remove_legacy_rc_blocks(home / ".bashrc")
+        _sync_matrix_disable_block(home / ".bashrc", want_matrix)
 
     if do_cursor or do_vscode:
         paths = install_editor_helpers(managed, cursor=bool(do_cursor), vscode=bool(do_vscode))
@@ -222,9 +233,13 @@ def uninstall_command(
     for path, bid in (
         (home / ".zshrc", "fzf-zsh"),
         (home / ".zshrc", "banner-env"),
+        (home / ".zshrc", "matrix-env"),
+        (home / ".zshrc", "matrix-disable"),
         (home / ".zshrc", "zsh"),
         (home / ".bashrc", "fzf-bash"),
         (home / ".bashrc", "banner-env"),
+        (home / ".bashrc", "matrix-env"),
+        (home / ".bashrc", "matrix-disable"),
         (home / ".bashrc", "bash"),
     ):
         remove_block_file(path, bid, backup=True)
@@ -259,6 +274,25 @@ def doctor_command(
     sp = sound_path()
     table.add_row("sound file", "ok " + str(sp) if sp.is_file() else f"missing {sp}")
 
+    from faah.terminal_matrix import (
+        matrix_cli_duration,
+        matrix_duration,
+        matrix_effect_enabled,
+        matrix_hook_duration,
+    )
+
+    _md = matrix_effect_enabled()
+    _mv = os.environ.get("FAHH_DISABLE_MATRIX", "(unset)")
+    _faah_bin = shutil.which("faah")
+    _timing = (
+        f"{'on' if _md else 'off'} (FAHH_DISABLE_MATRIX={_mv}); "
+        f"typo≈{matrix_cli_duration():.1f}s hook≈{matrix_hook_duration():.1f}s "
+        f"run≈{matrix_duration():.1f}s"
+    )
+    table.add_row("terminal-matrix", _timing)
+    _path_hint = "[yellow]missing[/yellow] (try: python3 -m faah)"
+    table.add_row("`faah` on PATH", _faah_bin or _path_hint)
+
     console.print(table)
     if bad:
         console.print(f"\n[yellow]{bad}[/yellow]")
@@ -282,11 +316,34 @@ def play_command() -> None:
     raise typer.Exit(play_faah_sound(err_console=console))
 
 
+@app.command("terminal-matrix")
+def terminal_matrix_command(
+    seconds: float | None = typer.Option(
+        None,
+        "--seconds",
+        "-s",
+        help="Seconds to run (default: FAHH_MATRIX_SEC or ~0.85).",
+    ),
+) -> None:
+    """cmatrix-style F/A/H/! rain on stderr (plain flood if not a TTY)."""
+    from faah.terminal_matrix import matrix_duration, run_fah_matrix
+
+    dur = matrix_duration() if seconds is None else max(0.4, min(60.0, seconds))
+    run_fah_matrix(stream=sys.stderr, duration=dur)
+    raise typer.Exit(0)
+
+
 def main() -> None:
+    # Click handles usage errors with sys.exit(2); wrapping sys.exit is reliable across
+    # environments (some runners only observe the builtin, not a caught SystemExit).
+    real_exit = sys.exit
+
+    def _exit_hook(code: object | None = None) -> None:
+        maybe_matrix_on_usage_error(coerce_cli_exit_code(code))
+        real_exit(code)
+
+    sys.exit = _exit_hook  # type: ignore[method-assign,assignment]
     try:
         app()
-    except SystemExit as e:
-        code = e.code
-        if isinstance(code, int):
-            maybe_print_fah_banner_on_usage_error(code)
-        raise
+    finally:
+        sys.exit = real_exit  # type: ignore[method-assign,assignment]

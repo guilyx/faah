@@ -47,7 +47,8 @@ def play_sound(sound_file: Path, *, background: bool = True) -> int:
     if not path.is_file():
         return 1
     p = str(path)
-    # mpv: --force-window=no + --no-video avoid a GUI window for MP3 on some desktops.
+    # mpv: no window — force-window=no, --no-video, --vo=null (user mpv.conf can otherwise
+    # still create a VO/window on some builds).
     for exe, args in (
         (
             "mpv",
@@ -56,6 +57,7 @@ def play_sound(sound_file: Path, *, background: bool = True) -> int:
                 "--really-quiet",
                 "--force-window=no",
                 "--no-video",
+                "--vo=null",
                 p,
             ],
         ),
@@ -69,14 +71,14 @@ def play_sound(sound_file: Path, *, background: bool = True) -> int:
         try:
             if background:
                 subprocess.Popen(  # noqa: S603
-                    [bin_path, *args[1:]],
+                    [bin_path, *args],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                     start_new_session=True,
                 )
                 return 0
             subprocess.run(  # noqa: S603
-                [bin_path, *args[1:]],
+                [bin_path, *args],
                 check=False,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,

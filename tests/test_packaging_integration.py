@@ -162,6 +162,7 @@ def test_wheel_install_writes_zshrc_block(
     text = zshrc.read_text(encoding="utf-8")
     assert "# >> faah:zsh" in text
     assert "init/faah.zsh" in text
+    assert "FAHH_DISABLE_MATRIX" not in text
 
 
 def test_wheel_install_play_returns_expected_code(

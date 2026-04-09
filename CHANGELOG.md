@@ -6,13 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Added
+## [2.0.0] - 2026-04-09
 
-- **`faah.sound.play_faah_sound`**: shared implementation for **`faah play`** (no separate **`faah.play`** module or **`faah-play`** script).
-
-## [2.0.0rc1] - 2026-04-09
-
-Pre-release **2.0.0** (PEP 440: `2.0.0rc1`). Python/Typer CLI, managed `~/.config/faah`, packaging, and installer hardening.
+Stable **2.x** release: Python/Typer CLI, managed **`~/.config/faah`**, PyPI packaging, installer hardening, and shared **`faah play`** implementation. Supersedes pre-release **`2.0.0rc1`** (same feature set plus GA polish).
 
 ### Fixed
 
@@ -23,6 +19,7 @@ Pre-release **2.0.0** (PEP 440: `2.0.0rc1`). Python/Typer CLI, managed `~/.confi
 
 ### Added
 
+- **`faah.sound.play_faah_sound`**: shared implementation for **`faah play`** (no separate **`faah.play`** module or **`faah-play`** script).
 - Integration tests that **build a wheel**, **install into an isolated venv**, and run **`faah --version`**, **`doctor`**, **`install --yes`**, and **`play`** with a temporary `HOME`.
 - **Python package `faah` on PyPI**: `pyproject.toml`, `src/faah/` CLI (`faah`, `faah install|uninstall|doctor|play`), bundled shell assets under `src/faah/data/`, managed install into `~/.config/faah/`.
 - **uv** workflow: `uv.lock`; run tests with `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest`, lint with `uv run ruff check`, build with `uv run python -m build`.
@@ -34,6 +31,7 @@ Pre-release **2.0.0** (PEP 440: `2.0.0rc1`). Python/Typer CLI, managed `~/.confi
 - **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`.
 - **Repository layout**: removed duplicate top-level `assets/`, `bash/`, `zsh/`, `fzf/`, `init/`, `scripts/`, `cursor/`, `vscode/`, legacy `.setup/`, and root `VERSION`. Bundled shell assets live only under **`src/faah/data/`**; version only in **`src/faah/__init__.py`**.
 - **Dev workflow**: no `Makefile`; use the `uv run` commands documented in `README.md` and `CONTRIBUTING.md`.
+- **PyPI classifiers**: **Development Status** set to **Production/Stable** for the published package.
 
 ## [1.0.0] - 2026-04-09
 

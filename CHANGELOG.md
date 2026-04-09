@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Packaging integration tests: set **`XDG_CONFIG_HOME`** alongside **`HOME`** so installs sync under the temp directory when CI defines `XDG_CONFIG_HOME`.
+
 ### Added
 
 - Integration tests that **build a wheel**, **install into an isolated venv**, and run **`faah --version`**, **`doctor`**, **`install --yes`**, and **`play`** with a temporary `HOME`.

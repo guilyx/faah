@@ -17,6 +17,18 @@ from faah import __version__
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
+def isolated_user_env(home: Path) -> dict[str, str]:
+    """HOME and XDG_CONFIG_HOME so `~/.config/faah` resolves under `home`.
+
+    CI often sets ``XDG_CONFIG_HOME``; if we only set ``HOME``, :func:`faah.installer.managed.default_config_dir`
+    still follows XDG and syncs outside the temp directory.
+    """
+    return {
+        "HOME": str(home),
+        "XDG_CONFIG_HOME": str(home / ".config"),
+    }
+
+
 def _run(
     argv: list[str],
     *,
@@ -74,7 +86,7 @@ def isolated_home(tmp_path: Path) -> Path:
 
 def test_wheel_install_faah_version(venv_with_wheel: Path, isolated_home: Path) -> None:
     faah = venv_with_wheel / "bin" / "faah"
-    proc = _run([str(faah), "--version"], env={"HOME": str(isolated_home)})
+    proc = _run([str(faah), "--version"], env=isolated_user_env(isolated_home))
     assert proc.returncode == 0
     assert __version__ in (proc.stdout + proc.stderr)
 
@@ -83,7 +95,7 @@ def test_wheel_install_python_module_version(venv_with_wheel: Path, isolated_hom
     py = venv_with_wheel / "bin" / "python"
     proc = _run(
         [str(py), "-m", "faah", "--version"],
-        env={"HOME": str(isolated_home)},
+        env=isolated_user_env(isolated_home),
     )
     assert proc.returncode == 0
     assert __version__ in (proc.stdout + proc.stderr)
@@ -91,7 +103,7 @@ def test_wheel_install_python_module_version(venv_with_wheel: Path, isolated_hom
 
 def test_wheel_install_doctor_exits_zero(venv_with_wheel: Path, isolated_home: Path) -> None:
     faah = venv_with_wheel / "bin" / "faah"
-    proc = _run([str(faah), "doctor"], env={"HOME": str(isolated_home)})
+    proc = _run([str(faah), "doctor"], env=isolated_user_env(isolated_home))
     assert proc.returncode == 0
     out = proc.stdout + proc.stderr
     assert "faah doctor" in out or "mpv" in out or "fzf" in out or "sound" in out.lower()
@@ -103,7 +115,7 @@ def test_wheel_install_syncs_data_without_rc(
 ) -> None:
     """Non-interactive install with all shell/editor options off only syncs ~/.config/faah."""
     faah = venv_with_wheel / "bin" / "faah"
-    env = {"HOME": str(isolated_home)}
+    env = isolated_user_env(isolated_home)
     proc = _run(
         [
             str(faah),
@@ -130,7 +142,7 @@ def test_wheel_install_writes_zshrc_block(
     isolated_home: Path,
 ) -> None:
     faah = venv_with_wheel / "bin" / "faah"
-    env = {"HOME": str(isolated_home)}
+    env = isolated_user_env(isolated_home)
     proc = _run(
         [
             str(faah),
@@ -158,7 +170,7 @@ def test_wheel_install_play_returns_expected_code(
 ) -> None:
     """After sync, `faah play` runs; exit 0 if a player exists, else 1."""
     faah = venv_with_wheel / "bin" / "faah"
-    env = {"HOME": str(isolated_home)}
+    env = isolated_user_env(isolated_home)
     _run(
         [
             str(faah),
@@ -184,6 +196,6 @@ def test_editable_install_faah_version(tmp_path: Path, isolated_home: Path) -> N
     proc = _run([str(pip), "install", "-e", "."], cwd=REPO_ROOT)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     faah = venv / "bin" / "faah"
-    proc2 = _run([str(faah), "--version"], env={"HOME": str(isolated_home)})
+    proc2 = _run([str(faah), "--version"], env=isolated_user_env(isolated_home))
     assert proc2.returncode == 0
     assert __version__ in (proc2.stdout + proc2.stderr)

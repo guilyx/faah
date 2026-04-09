@@ -94,6 +94,15 @@ From the repo root, run:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Pre-commit (optional)
+
+If you use `pre-commit`, this repo includes `.pre-commit-config.yaml` with ShellCheck and basic whitespace/YAML checks:
+
+```bash
+pre-commit install
+pre-commit run -a
+```
+
 ## License
 
 This project’s **shell scripts, setup scripts, and documentation** are released under the [MIT License](LICENSE) (`SPDX-License-Identifier: MIT`).

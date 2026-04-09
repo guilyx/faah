@@ -19,6 +19,7 @@ if command -v fzf >/dev/null 2>&1; then
       "/usr/share/fzf/completion.bash" \
       "/usr/share/doc/fzf/examples/key-bindings.bash" \
       "/usr/share/doc/fzf/examples/completion.bash"; do
+      # shellcheck disable=SC1090,SC1091
       [[ -r "$p" ]] && source "$p"
     done
   fi

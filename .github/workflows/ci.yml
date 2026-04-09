@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck zsh
+
+      - name: ShellCheck (bash + sh)
+        run: |
+          shellcheck --version
+          shellcheck \
+            .setup/install.sh \
+            .setup/update.sh \
+            scripts/play-faah.sh \
+            bash/faah.bash \
+            init/faah.bash \
+            fzf/fzf.bash
+
+      - name: Syntax check (zsh)
+        run: |
+          zsh --version
+          zsh -n zsh/faah.zsh
+          zsh -n init/faah.zsh
+          zsh -n fzf/fzf.zsh
+
+      - name: install.sh smoke
+        run: |
+          ./.setup/install.sh --help >/dev/null
+          ./.setup/install.sh --version
+          ./.setup/install.sh --check-deps
+

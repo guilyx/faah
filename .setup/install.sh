@@ -10,8 +10,8 @@ INSTALL_DEST="${FAHH_INSTALL_DEST:-${XDG_CONFIG_HOME:-$HOME/.config}/faah/instal
 
 # ANSI styling: respects NO_COLOR; FORCE_COLOR=1 enables even when not a TTY.
 _faah_init_style() {
-  B= D= R= G= Y= C= M= K= Z=
-  BE= DE= RE= YE= ZE=
+  B='' D='' R='' G='' Y='' C='' M='' K='' Z=''
+  BE='' DE='' RE='' YE='' ZE=''
   [[ -n "${NO_COLOR:-}" ]] && return
   local co=0 ce=0
   [[ -n "${FORCE_COLOR:-}" || -t 1 ]] && co=1
@@ -168,7 +168,7 @@ install_missing_deps() {
   fi
 
   printf '%b%s:%b automatic dependency install not supported on this system (no apt-get)\n' \
-    "$BE" "$(basename "$0")" "$ZE" "$YE" "$ZE" >&2
+    "$BE" "$(basename "$0")" "$ZE" >&2
   printf '%bHint:%b install one of: mpv or ffmpeg (ffplay), and optionally fzf.\n' "$DE" "$ZE" >&2
   return 1
 }

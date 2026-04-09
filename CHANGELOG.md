@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Packaging integration tests: set **`XDG_CONFIG_HOME`** alongside **`HOME`** so installs sync under the temp directory when CI defines `XDG_CONFIG_HOME`.
+
+### Added
+
+- Integration tests that **build a wheel**, **install into an isolated venv**, and run **`faah --version`**, **`doctor`**, **`install --yes`**, and **`play`** with a temporary `HOME`.
+- **Python package `faah` on PyPI**: `pyproject.toml`, `src/faah/` CLI (`faah`, `faah install|uninstall|doctor|play`), bundled shell assets under `src/faah/data/`, managed install into `~/.config/faah/`.
+- **uv** workflow: `uv.lock`; run tests with `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest`, lint with `uv run ruff check`, build with `uv run python -m build`.
+- **GitHub Actions**: Python CI (`ruff`, `pytest`, `build`) + optional shell checks; **Publish to PyPI** workflow (Trusted Publishing / OIDC).
+
+### Changed
+
+- **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`.
+- **Repository layout**: removed duplicate top-level `assets/`, `bash/`, `zsh/`, `fzf/`, `init/`, `scripts/`, `cursor/`, `vscode/`, legacy `.setup/`, and root `VERSION`. Bundled shell assets live only under **`src/faah/data/`**; version only in **`src/faah/__init__.py`**.
+- **Dev workflow**: no `Makefile`; use the `uv run` commands documented in `README.md` and `CONTRIBUTING.md`.
+
 ## [1.0.0] - 2026-04-09
 
 ### Fixed

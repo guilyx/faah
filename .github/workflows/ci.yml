@@ -4,39 +4,53 @@ on:
   push:
   pull_request:
 
+env:
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD: "1"
+
 jobs:
-  lint-and-smoke:
+  python:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install tooling
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.5.x"
+
+      - name: Sync and lint
+        run: |
+          uv sync --all-extras
+          uv run ruff check src tests
+
+      - name: Test
+        run: uv run pytest -q
+
+      - name: Build
+        run: uv run python -m build
+
+  shell-snippets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shell tooling
         run: |
           sudo apt-get update
           sudo apt-get install -y shellcheck zsh
 
-      - name: ShellCheck (bash + sh)
+      - name: ShellCheck (bundled data)
         run: |
           shellcheck --version
           shellcheck \
-            .setup/install.sh \
-            .setup/update.sh \
-            scripts/play-faah.sh \
-            bash/faah.bash \
-            init/faah.bash \
-            fzf/fzf.bash
+            src/faah/data/scripts/play-faah.sh \
+            src/faah/data/bash/faah.bash \
+            src/faah/data/init/faah.bash \
+            src/faah/data/fzf/fzf.bash
 
-      - name: Syntax check (zsh)
+      - name: zsh syntax (bundled data)
         run: |
           zsh --version
-          zsh -n zsh/faah.zsh
-          zsh -n init/faah.zsh
-          zsh -n fzf/fzf.zsh
-
-      - name: install.sh smoke
-        run: |
-          ./.setup/install.sh --help >/dev/null
-          ./.setup/install.sh --version
-          ./.setup/install.sh --check-deps
-
+          zsh -n src/faah/data/zsh/faah.zsh
+          zsh -n src/faah/data/init/faah.zsh
+          zsh -n src/faah/data/fzf/fzf.zsh

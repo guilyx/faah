@@ -1,30 +1,39 @@
 # Releasing `faah`
 
-This repo follows **SemVer** (`MAJOR.MINOR.PATCH`) and **Keep a Changelog** in `CHANGELOG.md`.
+This project uses **SemVer**, **Keep a Changelog** (`CHANGELOG.md`), and a **Python package** built with **hatchling** (see `pyproject.toml`).
 
-## Prepare
+## Version source of truth
 
-- Update `CHANGELOG.md` under `[Unreleased]`
-  - Keep entries short and user-facing.
-- Decide the next version (SemVer).
-- Update `VERSION`.
+- **`src/faah/__init__.py`**: `__version__` (used by Hatch, `faah --version`, and PyPI).
 
-## Release
+## Prepare a release
 
-From a clean working tree on `main`:
+1. Update **`CHANGELOG.md`**: move `[Unreleased]` notes into a new `## [X.Y.Z] - YYYY-MM-DD` section; leave an empty `[Unreleased]` if needed.
+2. Bump **`__version__`** in `src/faah/__init__.py`.
+3. Commit on `main` (or a release branch), e.g. `chore(release): vX.Y.Z`.
+
+## Tag
 
 ```bash
-git checkout main
-git pull --ff-only
-
-git add CHANGELOG.md VERSION
-git commit -m "chore(release): vX.Y.Z"
-
 git tag -a "vX.Y.Z" -m "vX.Y.Z"
 git push origin main --tags
 ```
 
-## Notes
+## Publish to PyPI (GitHub Actions)
 
-- `./.setup/install.sh --version` prints the current `VERSION`.
+This repo includes [`.github/workflows/publish.yml`](.github/workflows/publish.yml), which builds with **uv** and publishes using **PyPI Trusted Publishing (OIDC)**.
 
+1. In **PyPI** → your project → **Publishing**, add a **trusted publisher** for this GitHub repo (workflow: `publish.yml`, environment: `pypi` — adjust to match your PyPI settings).
+2. In **GitHub** → **Settings → Environments**, create an environment named **`pypi`** if you use environment protection rules.
+3. Create a **GitHub Release** (or run the workflow manually). The workflow uploads artifacts from `dist/` to PyPI.
+
+Do **not** commit API tokens; OIDC is preferred.
+
+## Local build sanity check
+
+```bash
+uv sync --all-extras
+uv run python -m build
+```
+
+Artifacts appear under `dist/`.

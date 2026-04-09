@@ -44,6 +44,8 @@ pip install -U faah
 uv tool upgrade faah
 ```
 
+Pre-releases (e.g. **2.0.0** RCs): use **`pip install -U --pre faah`** or pin **`faah==2.0.0rc1`**.
+
 ## Development (from this repo)
 
 Uses **[uv](https://docs.astral.sh/uv/)** (see `pyproject.toml` and `uv.lock`).

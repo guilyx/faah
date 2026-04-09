@@ -10,7 +10,11 @@ This project uses **SemVer**, **Keep a Changelog** (`CHANGELOG.md`), and a **Pyt
 
 1. Update **`CHANGELOG.md`**: move `[Unreleased]` notes into a new `## [X.Y.Z] - YYYY-MM-DD` section; leave an empty `[Unreleased]` if needed.
 2. Bump **`__version__`** in `src/faah/__init__.py`.
-3. Commit on `main` (or a release branch), e.g. `chore(release): vX.Y.Z`.
+3. Commit on `main`, a feature/fix branch, or a dedicated **release branch** (e.g. **`release/2.0.0rc1`** for an RC), then open a PR into `main` as needed. Example message: `chore(release): prepare 2.0.0rc1`.
+
+### Pre-releases (rc, alpha, beta)
+
+Use **PEP 440** versions in **`__version__`** (e.g. **`2.0.0rc1`**, not `2.0.0-rc1` in the Python string—tools normalize for PyPI). Tag as **`v2.0.0rc1`** to match. Consumers install with **`pip install --pre faah`** or pin the exact version. Prefer pushing RC prep on **`release/<version>`** so the GitHub Release / PyPI publish workflow targets a clear branch.
 
 ## Tag
 

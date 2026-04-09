@@ -6,11 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Planned
-
-- Larger features and design direction for post-**2.1.0** releases are tracked in [ROADMAP.md](ROADMAP.md).
-
-## [2.1.0] - Unreleased
+## [2.1.0] - 2026-04-09
 
 ### Added
 

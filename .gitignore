@@ -1,0 +1,18 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Backup / temp
+*.bak
+*.tmp
+*.log
+
+# Optional local overrides (uncomment if you add machine-specific files)
+# local/
+# *.local

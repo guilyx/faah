@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **`faah help`** subcommand for usage (documented as preferred over **`faah --help`**).
+- **Terminal-matrix only** (no ASCII banner): **`faah terminal-matrix`** and automatic runs on **`faah`** usage mistakes (exit **2**) and zsh/bash hooks. Full-screen rain on a TTY; **plain scrolling F/A/H/! flood** when stderr is not a TTY so output always appears.
+- **`FAHH_DISABLE_MATRIX`**: opt out via **`faah install --no-matrix`** (**`matrix-disable`** rc block) or env.
+- **`faah install`**: single prompt / **`--matrix` / `--no-matrix`** (default **on**); removes legacy **`banner-env`** / **`matrix-env`** blocks from older versions.
+- **`FAHH_REPLACE_NOT_FOUND`**: zsh **`command_not_found_handler`** / bash **`command_not_found_handle`** — matrix + sound without the default **`command not found`** line (bash **4+**).
+- **`faah doctor`**: reports **`FAHH_DISABLE_MATRIX`** / terminal-matrix status.
+
+### Removed
+
+- Static / typewriter **FAAAAH** banner module and **`FAHH_FAH_BANNER`**, **`FAHH_SHELL_FAH_BANNER`**, animation env vars.
+
+### Changed
+
+- **Terminal-matrix performance**: lower default durations (**~0.85** s manual, **~0.6** s CLI typo, **~0.72** s shell hooks via **`FAHH_MATRIX_*_SEC`**), higher default **FPS**, lighter **plain flood** (fewer lines per frame). Shell hooks pass **`-s`** and fall back to **`python3 -m faah`** only when **`import faah`** succeeds (avoids **`No module named faah`** from bare **`/usr/bin/python3`**). Optional **`FAHH_PYTHON`**. **`faah doctor`** shows timings and **`faah`** on **`PATH`**.
+
+### Fixed
+
+- **`terminal-matrix`**: removing finished rain streams no longer uses **`frozenset`** on mutable **`_Stream`** dataclass instances (unhashable → **`TypeError`**).
+- Usage-error hook: wrap **`sys.exit`** around **`app()`** so Click/Typer’s **`sys.exit(2)`** path runs **terminal-matrix** reliably. **`coerce_cli_exit_code`** lives in **`cli_exit.py`**.
+- **`faah play` / `play_sound`**: player argv accidentally used **`args[1:]`**, dropping **`--no-terminal`** for **mpv**, **`-nodisp`** for **ffplay**, and the sound path for **paplay**. Fixed to pass full arg lists; **mpv** also gets **`--vo=null`** (with **`play-faah.sh`**) so a GUI window should not open even with aggressive **`mpv.conf`**.
+
 ## [2.0.1] - 2026-04-09
 
 ### Fixed

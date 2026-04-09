@@ -1,6 +1,6 @@
 # faah
 
-Small dotfiles-style snippets that play a short sound when the **last interactive shell command** exits non-zero, plus optional **fzf** defaults and notes for **Cursor** / **VS Code** integrated terminals.
+Small dotfiles-style snippets that play a short sound when the last command hits **“command not found” (127)** or **“not executable” (126)** by default — not for normal failing commands (`grep` miss, `false`, etc.). Optional **fzf** defaults and notes for **Cursor** / **VS Code** integrated terminals.
 
 ## Layout
 
@@ -14,6 +14,7 @@ Small dotfiles-style snippets that play a short sound when the **last interactiv
 | [cursor/](cursor/) | Cursor terminal / settings notes |
 | [vscode/](vscode/) | VS Code terminal / settings notes + optional `extensions.json` |
 | [.setup/](.setup/) | Install and dependency checks ([.setup/README.md](.setup/README.md)) |
+| [.setup/update.sh](.setup/update.sh) | Update this repo via `git pull` + rerun dependency report |
 | [LICENSE](LICENSE) | MIT (scripts and documentation) |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 
@@ -24,6 +25,7 @@ Small dotfiles-style snippets that play a short sound when the **last interactiv
 1. Clone or copy this repo (example: `~/dev/faah`).
 2. **Interactive (recommended):** run **`./.setup/install.sh --interactive`** and choose zsh and/or bash, optional fzf, optional copies for Cursor/VS Code under `~/.config/faah/install/`, and an optional symlink **`~/.config/faah`** → this repo. Requires a terminal (TTY). See [.setup/README.md](.setup/README.md) for behavior and env vars.
 3. **Manual:** run **`./.setup/install.sh`** — it **`chmod +x`** the player, prints a **dependency report** (audio tools, `fzf`, sound file), then prints `source` lines. Use **`./.setup/install.sh --check-deps`** for the report only.
+   - If you want the installer to also install missing dependencies on Ubuntu/Debian, run: **`./.setup/install.sh --install-deps`** (uses `apt`, prompts for `sudo`).
 4. Optional CLI: **`./.setup/install.sh --symlink-config`** creates **`~/.config/faah`** → this repo (override with **`FAHH_CONFIG_LINK`**). Then you can `source ~/.config/faah/zsh/faah.zsh` if you prefer a stable path.
 5. If you did not use `--interactive`, add to **`~/.zshrc`** (interactive shells only):
 
@@ -54,7 +56,8 @@ Small dotfiles-style snippets that play a short sound when the **last interactiv
 | `FAHH_ROOT` | Root of this repo (auto-detected if unset) |
 | `FAHH_SOUND` | Path to sound file (default: `$FAHH_ROOT/assets/sounds/fahhh.mp3`) |
 | `FAHH_DISABLED` | If non-empty, hooks do nothing |
-| `FAHH_IGNORE_EXIT` | Space-separated exit codes that **do not** trigger sound (default: `130`) |
+| `FAHH_PLAY_EXIT_CODES` | Space-separated exit codes that **do** trigger sound (default: `127 126`). Set to `all` to play on any non-zero exit (old behavior). |
+| `FAHH_IGNORE_EXIT` | When `FAHH_PLAY_EXIT_CODES=all`: codes that **never** trigger sound (default: `130` Ctrl-C). Ignored in default 127/126 mode. |
 | `FAHH_INSTALL_DEST` | Base dir for interactive installer copies of Cursor/VS Code fragments (default: `~/.config/faah/install`) |
 | `FAHH_CONFIG_LINK` | Symlink path for `./.setup/install.sh --symlink-config` (default: `~/.config/faah`) |
 | `FAHH_SKIP_DEPS` | If set, `./.setup/install.sh` skips printing the dependency section (same as `--skip-deps`) |
@@ -70,6 +73,14 @@ Run:
 ```
 
 This removes the `faah` marked blocks from `~/.zshrc` / `~/.bashrc`, deletes `~/.config/faah/install/*` (or whatever `FAHH_INSTALL_DEST` points to), and removes the `~/.config/faah` symlink **only if** it points to this repository.
+
+## Update
+
+From the repo root, run:
+
+```bash
+./.setup/update.sh
+```
 
 ## Troubleshooting
 

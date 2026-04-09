@@ -51,6 +51,7 @@ usage() {
   printf '  %b    --uninstall%b         %bRemove installed blocks/artifacts (see below)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --yes%b               %bAssume yes for uninstall confirmation prompts%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --check-deps%b        %bPrint dependency report only, then exit (no chmod)%b\n' "$C" "$Z" "$D" "$Z"
+  printf '  %b    --install-deps%b      %bInstall missing deps via system package manager (Ubuntu/Debian: apt)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --skip-deps%b         %bSkip the dependency report (also env FAHH_SKIP_DEPS)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --symlink-config%b    %bCreate symlink: ~/.config/faah -> repository (see FAHH_CONFIG_LINK)%b\n' "$C" "$Z" "$D" "$Z"
   printf '  %b    --print-snippet K%b   %bPrint one source line; K is zsh | bash | fzf-zsh | fzf-bash%b\n' "$C" "$Z" "$D" "$Z"
@@ -78,6 +79,88 @@ usage() {
 
 have_cmd() {
   command -v "$1" >/dev/null 2>&1
+}
+
+# Missing-deps detection.
+missing_deps() {
+  local missing=()
+
+  # Need at least one audio player.
+  if ! have_cmd mpv && ! have_cmd ffplay && ! have_cmd paplay && ! have_cmd aplay; then
+    missing+=(audio)
+  fi
+
+  # Optional, but commonly desired when enabling fzf integration.
+  if ! have_cmd fzf; then
+    missing+=(fzf)
+  fi
+
+  printf '%s\n' "${missing[*]:-}"
+}
+
+install_deps_apt() {
+  local want_fzf=${1:-0}
+  local pkgs=()
+
+  # Ensure we can play MP3 reliably: mpv is the best single dependency on Ubuntu/Debian.
+  if ! have_cmd mpv && ! have_cmd ffplay && ! have_cmd paplay && ! have_cmd aplay; then
+    pkgs+=(mpv)
+  fi
+
+  # Provide fallbacks / common setups. (paplay/aplay won't decode MP3, but are useful if user swaps sound format.)
+  have_cmd paplay || pkgs+=(pulseaudio-utils)
+  have_cmd aplay || pkgs+=(alsa-utils)
+
+  if [[ "$want_fzf" -eq 1 ]]; then
+    have_cmd fzf || pkgs+=(fzf)
+  fi
+
+  if [[ "${#pkgs[@]}" -eq 0 ]]; then
+    printf '%bok%b  %bdeps%b already satisfied (nothing to install)\n' "$G" "$Z" "$D" "$Z"
+    return 0
+  fi
+
+  if [[ $EUID -ne 0 ]] && ! have_cmd sudo; then
+    printf '%b%s:%b need %bsudo%b to install deps (or run as root)\n' \
+      "$BE" "$(basename "$0")" "$ZE" "$YE" "$ZE" >&2
+    return 1
+  fi
+
+  printf '\n%bInstall dependencies (apt)%b\n' "$B" "$Z"
+  printf '%bWill install:%b %s\n' "$D" "$Z" "${pkgs[*]}"
+
+  if [[ -z ${FAHH_YES:-} ]]; then
+    if ! prompt_yn "Proceed with apt install (requires sudo)?" n; then
+      printf '%bskip%b  dependency install cancelled\n' "$Y" "$Z"
+      return 0
+    fi
+  fi
+
+  if [[ $EUID -eq 0 ]]; then
+    apt-get update
+    apt-get install -y "${pkgs[@]}"
+  else
+    sudo apt-get update
+    sudo apt-get install -y "${pkgs[@]}"
+  fi
+
+  printf '%bok%b  %bdeps%b installed\n' "$G" "$Z" "$D" "$Z"
+}
+
+install_missing_deps() {
+  # For now, we implement Ubuntu/Debian apt only (selected by user).
+  # If you need other distros, we can extend with dnf/pacman.
+  local want_fzf=${1:-0}
+
+  if have_cmd apt-get; then
+    install_deps_apt "$want_fzf"
+    return 0
+  fi
+
+  printf '%b%s:%b automatic dependency install not supported on this system (no apt-get)\n' \
+    "$BE" "$(basename "$0")" "$ZE" "$YE" "$ZE" >&2
+  printf '%bHint:%b install one of: mpv or ffmpeg (ffplay), and optionally fzf.\n' "$DE" "$ZE" >&2
+  return 1
 }
 
 # Report audio players, fzf, and default sound file (merged from former check-deps.sh).
@@ -283,6 +366,17 @@ run_interactive() {
   if [[ -z ${FAHH_SKIP_DEPS:-} ]]; then
     check_deps
   fi
+  # Offer to install missing deps in interactive mode.
+  local md
+  md=$(missing_deps)
+  if [[ -n "$md" ]]; then
+    printf '\n%bMissing deps detected:%b %s\n' "$Y" "$Z" "$md"
+    if prompt_yn "Install missing dependencies now?" y; then
+      # If user is in interactive mode, assume fzf could be desired.
+      install_missing_deps 1 || true
+      check_deps
+    fi
+  fi
   printf '\n%b==== faah interactive setup ====%b\n' "${B}${C}" "$Z"
   printf '%bRepo:%b %s\n\n' "$B" "$Z" "$ROOT"
 
@@ -391,6 +485,7 @@ main() {
   local snippet=""
   local do_interactive=0
   local deps_only=0
+  local do_install_deps=0
   local do_uninstall=0
 
   _faah_init_style
@@ -415,6 +510,10 @@ main() {
         ;;
       --check-deps)
         deps_only=1
+        shift
+        ;;
+      --install-deps)
+        do_install_deps=1
         shift
         ;;
       --skip-deps)
@@ -449,6 +548,13 @@ main() {
     exit 0
   fi
 
+  if [[ "$do_install_deps" -eq 1 ]]; then
+    # Install missing deps (audio required; fzf optional but included in this mode).
+    install_missing_deps 1
+    check_deps
+    exit 0
+  fi
+
   if [[ "$do_uninstall" -eq 1 ]]; then
     uninstall_all
     exit 0
@@ -462,6 +568,19 @@ main() {
   chmod_play
   if [[ -z ${FAHH_SKIP_DEPS:-} ]]; then
     check_deps
+  fi
+  # Offer to install missing deps in normal (non-interactive) runs when attached to a TTY.
+  # This keeps default behavior safe (no sudo unless the user confirms).
+  if [[ -t 0 ]]; then
+    local md
+    md=$(missing_deps)
+    if [[ -n "$md" ]]; then
+      printf '\n%bMissing deps detected:%b %s\n' "$Y" "$Z" "$md"
+      if prompt_yn "Install missing dependencies now?" n; then
+        install_missing_deps 0 || true
+        check_deps
+      fi
+    fi
   fi
   [[ "$do_link" -eq 1 ]] && symlink_config
   if [[ -n "$snippet" ]]; then

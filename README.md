@@ -50,7 +50,8 @@ Uses **[uv](https://docs.astral.sh/uv/)** (see `pyproject.toml` and `uv.lock`).
 
 ```bash
 uv sync --all-extras
-make test    # or: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q
+uv run ruff check src tests
 uv run python -m build
 ```
 

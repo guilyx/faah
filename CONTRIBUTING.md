@@ -11,14 +11,15 @@ By contributing, you agree your contributions are licensed under the same terms 
 3. **Test interactively** after editing hooks:
    - zsh: `zsh -ic 'source ./zsh/faah.zsh; false; echo exit=$?'`
    - bash: `bash -ic 'source ./bash/faah.bash; false; echo exit=$?'`
-4. **Python**: use **uv** (see `pyproject.toml`). Install dev extras and run tests:
+4. **Python**: use **uv** (see `pyproject.toml`). Install dev extras and run checks:
 
    ```bash
    uv sync --all-extras
-   make test
+   PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 uv run pytest -q
+   uv run ruff check src tests
    ```
 
-   If your environment loads extra global `pytest` plugins (e.g. ROS), tests set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` via `Makefile` / CI.
+   If your environment loads extra global `pytest` plugins (e.g. ROS), set `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` (same as CI).
 
 5. **Update [CHANGELOG.md](CHANGELOG.md)** under `[Unreleased]` with a short note under Added/Changed/Fixed as appropriate.
 

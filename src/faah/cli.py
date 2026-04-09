@@ -22,7 +22,7 @@ from faah.installer.managed import (
     unsafe_managed_dest_reason,
 )
 from faah.installer.rc import ensure_block, remove_block_file
-from faah.sound import play_sound
+from faah.sound import play_faah_sound
 
 app = typer.Typer(
     name="faah",
@@ -237,17 +237,7 @@ def doctor_command(
 @app.command("play")
 def play_command() -> None:
     """Play the configured sound once (test audio)."""
-    managed = default_config_dir()
-    sp = sound_path(managed)
-    if not sp.is_file():
-        try:
-            sync_managed_config()
-        except ValueError as e:
-            console.print(f"[red]{e}[/red]")
-            raise typer.Exit(1) from None
-        sp = sound_path()
-    code = play_sound(sp, background=False)
-    raise typer.Exit(code)
+    raise typer.Exit(play_faah_sound(err_console=console))
 
 
 def main() -> None:

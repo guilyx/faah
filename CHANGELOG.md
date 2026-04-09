@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-04-09
+
 ### Fixed
 
 - `zsh/faah.zsh` and `bash/faah.bash`: removed `unset` of the play-script path so `precmd` / `PROMPT_COMMAND` can still invoke `play-faah.sh` (previously hooks always skipped audio).

@@ -14,8 +14,8 @@ This project uses **SemVer**, **Keep a Changelog** (`CHANGELOG.md`), and a **Pyt
 
 ### Prep branches (e.g. **2.1.0**)
 
-- Use a branch like **`release/2.1.0-prep`** to land changelog + version bumps before tagging.
-- While preparing, **`__version__`** may stay on a **PEP 440** pre-release string (e.g. **`2.1.0dev0`**) until you are ready to publish; bump to **`2.1.0`** for the final commit that matches the Git tag and PyPI artifact.
+- Use a branch like **`release/2.1.0-prep`** to land changelog + version bumps before merging and tagging.
+- **`__version__`** should match the release you intend to tag (e.g. **`2.1.0`**) on the commit that becomes **`v2.1.0`** on PyPI.
 - [ROADMAP.md](ROADMAP.md) holds forward-looking items that are **not** necessarily part of the tagged release; keep [CHANGELOG.md](CHANGELOG.md) aligned with what actually ships.
 
 ### Pre-releases (rc, alpha, beta)

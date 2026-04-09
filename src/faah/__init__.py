@@ -1,3 +1,3 @@
 """faah: terminal sound on selected shell exit codes."""
 
-__version__ = "2.1.0dev0"
+__version__ = "2.1.0"

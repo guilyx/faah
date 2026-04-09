@@ -54,7 +54,7 @@ pip install -U faah
 uv tool upgrade faah
 ```
 
-If you previously installed **`2.0.0rc1`**, upgrade with **`pip install -U faah`** (or **`uv tool upgrade faah`**) to get the current **2.0.x** line (**`2.0.1`** includes the mpv no-window fix for **`faah play`** / **`play-faah.sh`**). **2.1.0** (terminal-matrix overhaul, hook fixes, and related changes) is documented in [CHANGELOG.md](CHANGELOG.md); development builds may use **`2.1.0dev0`** on branch **`release/2.1.0-prep`** until the final tag.
+If you previously installed **`2.0.0rc1`**, upgrade with **`pip install -U faah`** (or **`uv tool upgrade faah`**) to get the current line. **`2.0.1`** includes the mpv no-window fix for **`faah play`** / **`play-faah.sh`**. **`2.1.0`** (terminal-matrix overhaul, hook fixes, and related changes) is documented in [CHANGELOG.md](CHANGELOG.md).
 
 ## Development (from this repo)
 

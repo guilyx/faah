@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 
 - Packaging integration tests: set **`XDG_CONFIG_HOME`** alongside **`HOME`** so installs sync under the temp directory when CI defines `XDG_CONFIG_HOME`.
+- Shell rc bootstrap line uses **`[[ -r ... ]] && source ...`** so a missing **`~/.config/faah`** does not error on every shell startup.
+- Rc bootstrap **no longer defines a shell function named `faah`**, which had **shadowed the real `faah` CLI** so commands like **`faah install`** never reached Python. **`faah install`** now **replaces** an existing faah block when the bootstrap line changes, so one run can fix old rc files (use **`command faah install --yes`** once if the shadowing function is still present).
 
 ### Added
 
@@ -19,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **README**: Troubleshooting clarifies that the rc bootstrap guard applies only to the **main** `init/faah.{zsh,bash}` file; errors from **inside** managed scripts are not suppressed.
 - **Install/update path**: primary flow is `pip install faah` / `uv tool install faah` then `faah install`.
 - **Repository layout**: removed duplicate top-level `assets/`, `bash/`, `zsh/`, `fzf/`, `init/`, `scripts/`, `cursor/`, `vscode/`, legacy `.setup/`, and root `VERSION`. Bundled shell assets live only under **`src/faah/data/`**; version only in **`src/faah/__init__.py`**.
 - **Dev workflow**: no `Makefile`; use the `uv run` commands documented in `README.md` and `CONTRIBUTING.md`.

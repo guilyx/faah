@@ -31,3 +31,17 @@ def test_backup_and_ensure(tmp_path: Path) -> None:
     assert r.backup.is_file()
     r2 = ensure_block(rc, "zsh", "line\n", backup=True)
     assert not r2.changed
+
+
+def test_ensure_block_replaces_when_body_changes(tmp_path: Path) -> None:
+    from faah.installer.rc import ensure_block, has_block
+
+    rc = tmp_path / ".zshrc"
+    rc.write_text("", encoding="utf-8")
+    ensure_block(rc, "zsh", "first\n", backup=False)
+    r = ensure_block(rc, "zsh", "second\n", backup=False)
+    assert r.changed
+    text = rc.read_text(encoding="utf-8")
+    assert "first" not in text
+    assert "second" in text
+    assert has_block(text, "zsh")

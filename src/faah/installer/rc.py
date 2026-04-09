@@ -20,6 +20,21 @@ def has_block(content: str, block_id: str) -> bool:
     return f"# >> faah:{block_id}" in content
 
 
+def extract_block_body(content: str, block_id: str) -> str | None:
+    """Return text between faah markers, or None if the block is missing."""
+    b = re.escape(block_begin(block_id))
+    e = re.escape(block_end(block_id))
+    m = re.search(b + r"(.*)" + e, content, flags=re.DOTALL)
+    return m.group(1) if m else None
+
+
+def _bodies_equivalent(a: str, b: str) -> bool:
+    """Ignore trailing newline / CRLF differences."""
+    x = a.replace("\r\n", "\n").strip()
+    y = b.replace("\r\n", "\n").strip()
+    return x == y
+
+
 def remove_block_lines(content: str, block_id: str) -> str:
     begin = f"# >> faah:{block_id}"
     end = f"# << faah:{block_id}"
@@ -84,7 +99,14 @@ def ensure_block(
 ) -> RcEditResult:
     content = read_rc(rc_path)
     if has_block(content, block_id):
-        return RcEditResult(rc_path, False, None)
+        existing = extract_block_body(content, block_id)
+        if existing is not None and _bodies_equivalent(existing, body):
+            return RcEditResult(rc_path, False, None)
+        bkp = backup_if_exists(rc_path) if backup else None
+        stripped = remove_block_lines(content, block_id)
+        new_content = append_block(stripped, block_id, body)
+        write_rc(rc_path, new_content)
+        return RcEditResult(rc_path, True, bkp)
     bkp = backup_if_exists(rc_path) if backup else None
     new_content = append_block(content, block_id, body)
     write_rc(rc_path, new_content)

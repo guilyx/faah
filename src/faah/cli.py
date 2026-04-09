@@ -29,12 +29,16 @@ console = Console(stderr=True)
 
 
 def _bootstrap_line(shell: str, managed: Path) -> str:
+    # Single line, no shell function named `faah` — that shadowed the real `faah` CLI on PATH.
+    # Guard with [[ -r ]] so a missing ~/.config/faah does not break every new shell.
     if shell == "zsh":
         p = managed / "init" / "faah.zsh"
-        return f"faah(){{ source {shlex.quote(str(p))}; }}; faah\n"
+        q = shlex.quote(str(p))
+        return f"[[ -r {q} ]] && source {q}\n"
     if shell == "bash":
         p = managed / "init" / "faah.bash"
-        return f"faah(){{ source {shlex.quote(str(p))}; }}; faah\n"
+        q = shlex.quote(str(p))
+        return f"[[ -r {q} ]] && source {q}\n"
     raise ValueError(shell)
 
 

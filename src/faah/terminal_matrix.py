@@ -18,7 +18,8 @@ _FPS_ENV = "FAHH_MATRIX_FPS"
 _CHARS_ENV = "FAHH_MATRIX_CHARS"
 
 # Snappy defaults (full effect was ~3s @ 18fps — felt sluggish on hooks).
-_DEFAULT_SEC = 0.85
+# Manual / CLI-typo / hook durations are tuned for install defaults (~2× prior 0.85/0.6/0.72).
+_DEFAULT_SEC = 1.7
 _DEFAULT_FPS = 26.0
 
 # ANSI: dim green base, bright green, white head (cmatrix-ish)
@@ -54,17 +55,17 @@ def matrix_duration(default: float | None = None) -> float:
 def matrix_cli_duration() -> float:
     """Shorter default for ``faah`` typo path (usage exit 2)."""
     try:
-        return max(0.2, min(30.0, float(os.environ.get(_CLI_SEC_ENV, "0.6").strip())))
+        return max(0.2, min(30.0, float(os.environ.get(_CLI_SEC_ENV, "1.2").strip())))
     except ValueError:
-        return 0.6
+        return 1.2
 
 
 def matrix_hook_duration() -> float:
     """Default duration when shell hooks run ``faah terminal-matrix``."""
     try:
-        return max(0.2, min(30.0, float(os.environ.get(_HOOK_SEC_ENV, "0.72").strip())))
+        return max(0.2, min(30.0, float(os.environ.get(_HOOK_SEC_ENV, "1.44").strip())))
     except ValueError:
-        return 0.72
+        return 1.44
 
 
 def matrix_fps() -> float:

@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- **Terminal-matrix performance**: lower default durations (**~0.85** s manual, **~0.6** s CLI typo, **~0.72** s shell hooks via **`FAHH_MATRIX_*_SEC`**), higher default **FPS**, lighter **plain flood** (fewer lines per frame). Shell hooks pass **`-s`** and fall back to **`python3 -m faah`** only when **`import faah`** succeeds (avoids **`No module named faah`** from bare **`/usr/bin/python3`**). Optional **`FAHH_PYTHON`**. **`faah doctor`** shows timings and **`faah`** on **`PATH`**.
+- **Terminal-matrix performance**: default durations (**~1.7** s manual, **~1.2** s CLI typo, **~1.44** s shell hooks via **`FAHH_MATRIX_*_SEC`**), higher default **FPS**, lighter **plain flood** (fewer lines per frame). Shell hooks pass **`-s`** and fall back to **`python3 -m faah`** only when **`import faah`** succeeds (avoids **`No module named faah`** from bare **`/usr/bin/python3`**). Optional **`FAHH_PYTHON`**. **`faah doctor`** shows timings and **`faah`** on **`PATH`**.
 
 ### Fixed
 

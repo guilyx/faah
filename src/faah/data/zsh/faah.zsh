@@ -3,7 +3,7 @@
 #      FAHH_PLAY_EXIT_CODES, FAHH_IGNORE_EXIT (only when mode is "all"),
 #      FAHH_REPLACE_NOT_FOUND (1/true: zsh command_not_found_handler — no default msg),
 #      FAHH_DISABLE_MATRIX (1/true: skip terminal-matrix visuals)
-#      FAHH_MATRIX_HOOK_SEC (duration for hook-invoked matrix; default 0.72)
+#      FAHH_MATRIX_HOOK_SEC (duration for hook-invoked matrix; default 1.44)
 #      FAHH_PYTHON (override for python3 -m faah fallback when faah is not on PATH)
 
 [[ -o interactive ]] || return 0
@@ -29,7 +29,7 @@ _faah_matrix_disabled() {
 
 _faah_run_matrix() {
   _faah_matrix_disabled && return 0
-  local sec="${FAHH_MATRIX_HOOK_SEC:-0.72}"
+  local sec="${FAHH_MATRIX_HOOK_SEC:-1.44}"
   local py="${FAHH_PYTHON:-python3}"
   if command -v faah >/dev/null 2>&1; then
     command faah terminal-matrix -s "$sec" 2>&2

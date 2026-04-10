@@ -18,4 +18,3 @@ source "${FAHH_ROOT}/bash/faah.bash"
 # shellcheck source=../fzf/fzf.bash
 # shellcheck disable=SC1091
 [[ -n ${FAHH_ENABLE_FZF:-} ]] && source "${FAHH_ROOT}/fzf/fzf.bash"
-

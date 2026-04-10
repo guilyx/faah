@@ -111,9 +111,9 @@ tests/                     # pytest
 | `FAHH_IGNORE_EXIT` | When mode is `all`: codes to never trigger sound (default: `130`) |
 | `FAHH_DISABLE_MATRIX` | If **`1`** / **`true`** / **`yes`** / **`on`**, skip **terminal-matrix** visuals (CLI usage errors and shell hooks). Set by **`faah install --no-matrix`**. |
 | `FAHH_REPLACE_NOT_FOUND` | If set (non-empty, not **`0`/`false`/`no`/`off`**), install **`command_not_found_handler`** (zsh) or **`command_not_found_handle`** (bash **4+**). Unknown commands: matrix + sound only — **no** default `command not found` line. |
-| `FAHH_MATRIX_SEC` | Duration for **`faah terminal-matrix`** when **`-s`** is omitted (default **~0.85** s). |
-| `FAHH_MATRIX_CLI_SEC` | Duration for **`faah`** **usage mistakes** (exit **2**); default **~0.6** s (faster than a full run). |
-| `FAHH_MATRIX_HOOK_SEC` | Duration when **zsh/bash hooks** invoke matrix (default **~0.72** s). |
+| `FAHH_MATRIX_SEC` | Duration for **`faah terminal-matrix`** when **`-s`** is omitted (default **~1.7** s). |
+| `FAHH_MATRIX_CLI_SEC` | Duration for **`faah`** **usage mistakes** (exit **2**); default **~1.2** s (faster than a full run). |
+| `FAHH_MATRIX_HOOK_SEC` | Duration when **zsh/bash hooks** invoke matrix (default **~1.44** s). |
 | `FAHH_PYTHON` | Interpreter for **`python -m faah`** when **`faah`** is not on **`PATH`** (default **`python3`**). Must be a Python that has **faah** installed. |
 | `FAHH_MATRIX_FPS` | Frames per second (**`8`**–**`60`**, default **~26**). |
 | `FAHH_MATRIX_CHARS` | Character set (default **`FAH!`**). |
@@ -123,7 +123,7 @@ tests/                     # pytest
 - **Usage errors / hooks**: On **`faah …`** mistakes (exit **2**), **`faah.cli:main`** runs **terminal-matrix** on **stderr** (unless **`FAHH_DISABLE_MATRIX`**). For unknown shell commands, set **`FAHH_REPLACE_NOT_FOUND=1`** so zsh/bash call faah’s handler (matrix + sound) instead of the default **`command not found`** line. Run **`faah install --yes`** after upgrading so **`~/.config/faah/zsh/faah.zsh`** / **`bash/faah.bash`** stay current.
 
 - **Not a TTY**: You still get a **scrolling F/A/H/! flood** (lighter than before). Hooks try **`faah`** first, then **`python3 -m faah`** if the CLI is not on **`PATH`**. **`faah doctor`** shows whether **`faah`** was found.
-- **Feels slow**: Lower **`FAHH_MATRIX_SEC`**, **`FAHH_MATRIX_HOOK_SEC`**, or **`FAHH_MATRIX_CLI_SEC`** (defaults were shortened in recent versions). Raise **`FAHH_MATRIX_FPS`** (e.g. **32**) for snappier TTY animation.
+- **Feels slow**: Lower **`FAHH_MATRIX_SEC`**, **`FAHH_MATRIX_HOOK_SEC`**, or **`FAHH_MATRIX_CLI_SEC`**. Raise **`FAHH_MATRIX_FPS`** (e.g. **32**) for snappier TTY animation.
 - **`No module named faah`** after a bad command: the shell hook used to run **`python3 -m faah`** whenever the **`faah`** program was missing from **`PATH`**. System **`/usr/bin/python3`** often has no faah installed — that message is from Python. **Fix:** install the CLI (**`pip install faah`**, **`uv tool install faah`**, or **`uv sync`** in the repo and put **`faah`** on **`PATH`**), or run **`faah install --yes`** after upgrading so **`~/.config/faah`** matches. The hook now runs **`python3 -m faah`** only if **`import faah`** succeeds (silent otherwise). Optional: **`export FAHH_PYTHON=/path/to/venv/bin/python`** if faah is only installed in a venv.
 - **No sound**: Install **mpv** or **ffplay**; run `faah doctor`.
 - **A window opens when playing** (mpv/ffplay): faah passes **`--force-window=no`**, **`--no-video`**, and **`--vo=null`** to **mpv**, and **`-nodisp`** to **ffplay**. Run **`faah install --yes`** to refresh **`~/.config/faah/scripts/play-faah.sh`**, or upgrade faah. If it persists, check **`mpv --version`** and your desktop session (Wayland/X11).

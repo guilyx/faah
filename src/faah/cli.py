@@ -322,7 +322,7 @@ def terminal_matrix_command(
         None,
         "--seconds",
         "-s",
-        help="Seconds to run (default: FAHH_MATRIX_SEC or ~0.85).",
+        help="Seconds to run (default: FAHH_MATRIX_SEC or ~1.7).",
     ),
 ) -> None:
     """cmatrix-style F/A/H/! rain on stderr (plain flood if not a TTY)."""

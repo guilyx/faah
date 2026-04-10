@@ -12,4 +12,3 @@ source "${FAHH_ROOT}/zsh/faah.zsh"
 
 # Optional: fzf integration if installed/enabled by the user.
 [[ -n ${FAHH_ENABLE_FZF:-} ]] && source "${FAHH_ROOT}/fzf/fzf.zsh"
-
